@@ -66,6 +66,13 @@ init(){
   trap "tput cnorm -- normal" 0 1 5    # reset terminal colors to normal
 }
 
+do_alert(){
+  nlines=$(echo "$1" | wc -l ) ; maximum=$2 
+  if [[ ${#maximum} > 0 ]] && [[ $nlines > $maximum ]]; then 
+    echo -e "\n\n!!! DANGER ZONE ($nlines>$maximum) !!!" >> "$3"
+  fi
+}
+
 columnize(){
   i=1; lines="$(cat -)"; header="$( echo "$lines" | head -n0 )"; output="";
   rm $TMP.col.* &>/dev/null
@@ -76,13 +83,10 @@ columnize(){
     statuslines="$(echo "$lines" | tail -n+2 | grep -n -F "$status")"
     echo "$statuslines" | sed 's/:/,/g' | printcsv \
       | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' >> $TMP.col.$i
-    nlines=$(echo "$statuslines" | wc -l ) ; maximum=${maximum_todo["$status"]};
-    if [[ ${#maximum} > 0 ]] && [[ $nlines > $maximum ]]; then 
-      echo -e "\n\n!!! DANGER ZONE ($nlines>$maximum) !!!" >> $TMP.col.$i
-    fi
+    do_alert "$statuslines" ${maximum_todo["$status"]} $TMP.col.$i
     i=$((i+1))
   done 
-  pr -m -t -w$X -S"  " $TMP.col.*
+  pr -m -t -w$X -S"  " $TMP.col.*; rm $TMP.col.* # print and cleanup
 }
 
 show(){
