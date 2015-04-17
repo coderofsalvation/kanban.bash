@@ -9,7 +9,7 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
   
 ## Show me the kanban board!
 
-    $ ./kanban add PRIV "buy rose for girlfriend" "foo bar"
+    $ ./kanban add TODO PERSONAL buy rose for girlfriend foo bar
     $ ./kanban show
 
 <img alt="" src=".res/board.png"/>
@@ -55,7 +55,7 @@ see ~/.kanban.conf (gets created automatically)
       kanban <id>                             # edit or update item 
       kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
       kanban <status>                         # show only todo items with this status 
-      kanban add <status> <col1> <col2> ...   # add item 
+      kanban add <status> <tag> <info> ...    # add item 
 
       NOTE #1: statuses can be managed in ~/.kanban.conf
       NOTE #2: the database csv can be found in ~/.kanban.csv
@@ -94,3 +94,8 @@ KANBAN.bash brings the lean and mean kanban board to the console.
 It uses csv as database backend, a very popular tabular format.
 The commandline usage is very minimal so few keystrokes can do magic.
 
+## Todo 
+
+* more testing
+* tab completion
+* easier way of adding todos
