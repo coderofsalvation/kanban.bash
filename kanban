@@ -1,0 +1,144 @@
+#!/bin/bash
+#
+# commandline asciii kanban board for minimalist productivity bash hackers (csv-based)
+#
+# Usage:
+# 
+#   kanban show                             # show ascii kanban board
+#   kanban <id>                             # edit or update item 
+#   kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
+#   kanban <status>                         # show only todo items with this status 
+#   kanban add <status> <col1> <col2> ...   # add item 
+# 
+#   NOTE #1: statuses can be managed in ~/.kanban.conf
+#   NOTE #2: the database csv can be found in ~/.kanban.csv
+# 
+# Environment:
+# 
+#   You can switch context (e.g. work vs home vs project x ) like so:
+# 
+#   KANBANFILE=~/.kanban.foo.csv kanban show
+# 
+# Copyright (C) 2015, Leon van Kammen / Coder of Salvation 
+#  
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as
+#  published by the Free Software Foundation, either version 3 of the
+#  License, or (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+#  
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+TMP=~/.kanban.tmp
+read X Y <<< `tput cols; tput lines` # get size of terminal window
+[[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
+
+config_example="# kanban config file
+
+# kanban config file
+statuses=('BACKLOG' 'TODO' 'HOLD' 'IN_PROGRESS' 'DONE') 
+
+# maximum amount of todos within status (triggers warning when exceeds)
+declare -A maximum_todo
+maximum_todo['IN_PROGRESS']=6
+"
+
+createconfig(){
+  [[ -f ~/.kanban.conf ]] && { 
+    read -p "overwrite current config? (y/n)" overwrite; 
+    [[ ! "$overwrite" == "y" ]] && echo "aborted" && exit 1;
+  }
+  echo "$config_example" > ~/.kanban.conf 
+}
+
+add(){
+  [[ ! "${statuses[*]}" =~ "$1" ]] && echo "invalid status $1 (possible: ${statuses[*]})" && exit 1 
+  csvline="$( for col in "$@"; do printf "%s" "\"$col\","; done )"
+  echo "${csvline:0:$((${#csvline}-1))}" >> $KANBANFILE 
+}
+
+init(){                          
+  trap "tput cnorm -- normal" 0 1 5    # reset terminal colors to normal
+}
+
+columnize(){
+  i=1; lines="$(cat -)"; header="$( echo "$lines" | head -n0 )"; output="";
+  rm $TMP.col.* &>/dev/null
+  echo -e "$header";
+  for status in "${statuses[@]}"; do 
+    echo "| $status" > $TMP.col.$i
+    echo -e "|\n|" >> $TMP.col.$i
+    echo "$lines" | tail -n+2 | grep -n -F "$status" | sed 's/:/,/g' | printcsv \
+      | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' >> $TMP.col.$i
+    nlines=$(echo "$lines" | wc -l ) ; maximum=${maximum_todo["$status"]};
+    [[ ${#maximum} > 0 ]] && (( nlines > maximum )) && echo -e "\n\n!!! DANGER ZONE (>$maximum) !!!" >> $TMP.col.$i
+    i=$((i+1))
+  done 
+  printf "\033[1;37m"; pr -m -t -w$X -S"  " $TMP.col.* ; printf "\033[0;37m"
+}
+
+show(){
+  cols="$(for column in "${columns[@]}"; do printf "%s," "$column"; done)"
+  [[ ! -f "$KANBANFILE" ]] && touch "$KANBANFILE" 
+  clear; { echo -e "${cols}"; cat "$KANBANFILE";  } | columnize | more
+}
+
+update_item_status(){
+  item="$( cat $KANBANFILE | awk "{ if (NR==$1) print \$0 }" )"
+  [[ ${#item} == 0 ]] && echo "item $1 not found" && exit 1 
+  if [[ -n "$2" ]]; then  # status change 
+    status="$(echo "$item" | awk -F',' '{ print $1 }')"
+    sed -i "s|$item|${item/$status/$2}|g" $KANBANFILE 
+    echo "$status -> $2"
+  fi
+}
+
+update_item(){
+  item="$( cat $KANBANFILE | awk "{ if (NR==$1) print \$0 }" )"
+  [[ ${#item} == 0 ]] && echo "item $1 not found" && exit 1 
+  status="$(echo "$item" | awk -F',' '{ print $1 }')"
+  echo '#
+# STATUSES ARE: '${statuses[*]}' 
+#
+'"$item" > $TMP.update
+  ${EDITOR} $TMP.update
+  sed -i "s|$item|$(cat $TMP.update | tail -n1)|g" $KANBANFILE 
+  echo "updated item $1"
+}
+
+view_status(){
+  grep "$1" "$KANBANFILE" | printcsv 
+}
+
+printcsv(){
+  cat - | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"|,'            \
+    '{out=""; for(i=1;i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
+    max=99999 | sed 's/""/"/g' | column -t -s $'\t'                   
+}
+
+# source config
+[[ ! -f ~/.kanban.conf ]] && { createconfig; }
+source ~/.kanban.conf
+
+# execute main
+init
+
+if [[ -n "$1" ]]; then 
+
+  [[ "${statuses[*]}" =~ "$1" ]] && view_status "$1" && exit 0
+
+  case "$1" in 
+
+    [0-9]*)  [[ -n $2 ]] && [[ "${statuses[*]}" =~ "$2" ]] && update_item_status "$@" && exit 0
+             update_item "$@"
+             ;;
+
+    *)       "$@"
+             ;;
+  esac
+else grep -A17 "^# Usage:" "$0" | sed 's/^# //g'; fi
