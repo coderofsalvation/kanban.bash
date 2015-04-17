@@ -27,6 +27,14 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
     $ ./kanban 34
 
 > NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
+    
+## Simple listing of status 
+
+    $ k TODO 
+    TODO  ISD   Lorem                       senectus
+    TODO  PJGE  Lorem ipsum dolor sit amet  consectetuer adipiscing                   
+    TODO  ISD   Lorem ipsum dolor sit amet  Phasellus
+    TODO  NINJW workout                     2024-04-08 deadline
 
 ## Configuration 
 
@@ -66,16 +74,15 @@ see ~/.kanban.conf (gets created automatically)
     $ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
     $ echo 'alias k=kanban'          >> ~/.bashrc
 
-Now the true ninja can do commands like: 'k 23 DONE'
+Open a terminal on an extra monitor/screen/tmux:
+
+    $ watch kanban show
+
+An now run ninja-commands like: 'k 23 DONE' and withness the update:
 
     $ k 34 DONE 
     TODO -> DONE
     $ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"
-    $ k TODO 
-    TODO  ISD   Lorem                       senectus
-    TODO  PJGE  Lorem ipsum dolor sit amet  consectetuer adipiscing                   
-    TODO  ISD   Lorem ipsum dolor sit amet  Phasellus
-    TODO  NINJW workout                     2024-04-08 deadline
     
 > NOTE: optionally you can set `alias k=~/bin/kanban` in your ~/.bashrc 
 
