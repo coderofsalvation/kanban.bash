@@ -2,33 +2,17 @@ KANBAN.bash
 ===========
 commandline asciii kanban board for minimalist productivity bash hackers (csv-based)
 
-<img alt="" src=".res/board.png"/>
-
-## Usage
-
-    Usage:
-
-      kanban show                             # show ascii kanban board
-      kanban <id>                             # edit or update item 
-      kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
-      kanban <status>                         # show only todo items with this status 
-      kanban add <status> <col1> <col2> ...   # add item 
-
-      NOTE #1: statuses can be managed in ~/.kanban.conf
-      NOTE #2: the database csv can be found in ~/.kanban.csv
-
-    Environment:
-
-      You can switch context (e.g. work vs home vs project x ) like so:
-
-      KANBANFILE=~/.kanban.foo.csv kanban show
-
 ## Install
 
+    $ wget "https://github.com/coderofsalvation/kanban.bash/blob/master/kanban"
+    $ chmod 755 kanban
+  
 ## Show me the kanban board!
 
     $ ./kanban add PRIV "buy rose for girlfriend" "foo bar"
     $ ./kanban show
+
+    <img alt="" src=".res/board.png"/>
 
 ## Edit item 
 
@@ -58,6 +42,26 @@ see ~/.kanban.conf (gets created automatically)
     # maximum amount of todos within status (triggers warning when exceeds)
     declare -A maximum_todo
     maximum_todo['IN_PROGRESS']=6
+
+## Usage
+
+    $ kanban
+    Usage:
+
+      kanban show                             # show ascii kanban board
+      kanban <id>                             # edit or update item 
+      kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
+      kanban <status>                         # show only todo items with this status 
+      kanban add <status> <col1> <col2> ...   # add item 
+
+      NOTE #1: statuses can be managed in ~/.kanban.conf
+      NOTE #2: the database csv can be found in ~/.kanban.csv
+
+    Environment:
+
+      You can switch context (e.g. work vs home vs project x ) like so:
+
+      KANBANFILE=~/.kanban.foo.csv kanban show
 
 ## Attention UNIX ninjas 
 
