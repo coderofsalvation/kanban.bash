@@ -63,36 +63,33 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
 
 ## Attention UNIX ninjas 
 
-* Cleanup your kanban board with some bash-fu:
+> Cleanup your kanban board with some bash-fu:
 
     $ for i in {19,36,49}; do kanban $i BACKLOG; done
     DONE -> BACKLOG
     DONE -> BACKLOG
     DONE -> BACKLOG
 
-* mass-renames:
+> mass-renames:
 
     $ sed -i 's/FOO/BAR/g' ~/.kanban.csv
     
-* make yourself comfortable (call 'k' instead of './kanban' )
+> type 'k' instead of './kanban' 
 
     $ cp kanban ~/bin 
     $ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
     $ echo 'alias k=kanban'          >> ~/.bashrc
 
-* Open a terminal on an extra monitor/screen/tmux:
+> Open a terminal on an extra monitor/screen/tmux:
 
     $ watch kanban show
 
-* Run ninja-commands like: 'k 23 DONE' and withness the update:
+> Run ninja-commands like: 'k 23 DONE' and withness the update:
 
     $ k 34 DONE 
     TODO -> DONE
     $ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"
     
-> NOTE: optionally you can set `alias k=~/bin/kanban` in your ~/.bashrc 
-
-
 ## Why 
 
 > *For developers, there's no such thing as the ultimate todo-utility*
