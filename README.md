@@ -12,7 +12,9 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
     $ ./kanban add PRIV "buy rose for girlfriend" "foo bar"
     $ ./kanban show
 
-    <img alt="" src=".res/board.png"/>
+<img alt="" src=".res/board.png"/>
+
+> NOTE: columns are configurable, and board resizes according to terminal width
 
 ## Edit item 
 
