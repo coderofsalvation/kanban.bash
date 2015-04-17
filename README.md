@@ -23,7 +23,7 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
     | IN_PROGRESS
     |
     |
-    | 34 PRIV buy rose for girlfriend
+    | 34 PERSONAL buy rose for girlfriend
 
     $ ./kanban 34 DONE
     IN_PROGRESS -> DONE
