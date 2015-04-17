@@ -38,15 +38,8 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
 
 ## Configuration 
 
-see ~/.kanban.conf (gets created automatically)
-
-    # kanban config file
-
-    statuses=('BACKLOG' 'TODO' 'HOLD' 'IN_PROGRESS' 'DONE') 
-
-    # maximum amount of todos within status (triggers warning when exceeds)
-    declare -A maximum_todo
-    maximum_todo['IN_PROGRESS']=6
+see ~/.kanban.conf (gets created automatically).
+You can define the kanban statuses, and limit the maximum amount of todos per status.
 
 ## Usage
 
