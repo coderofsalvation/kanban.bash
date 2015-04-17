@@ -19,12 +19,6 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
 ## Change status 
 
     $ ./kanban show
-
-    | IN_PROGRESS
-    |
-    |
-    | 34 PERSONAL buy rose for girlfriend
-
     $ ./kanban 34 DONE
     IN_PROGRESS -> DONE
 
