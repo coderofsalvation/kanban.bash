@@ -16,12 +16,6 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
 
 > NOTE: columns are configurable, and board resizes according to terminal width
 
-## Edit item 
-
-    $ ./kanban 34
-
-> NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
-
 ## Change status 
 
     $ ./kanban show
@@ -32,6 +26,13 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
     | 34 PRIV buy rose for girlfriend
 
     $ ./kanban 34 DONE
+    IN_PROGRESS -> DONE
+
+## Edit item 
+
+    $ ./kanban 34
+
+> NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
 
 ## Configuration 
 
