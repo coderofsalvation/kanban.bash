@@ -30,11 +30,19 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
 
 ## Simple listing of status 
 
-    $ k TODO 
+    $ ./kanban TODO 
     TODO  ISD   Lorem                       senectus
     TODO  PJGE  Lorem ipsum dolor sit amet  consectetuer adipiscing                   
     TODO  ISD   Lorem ipsum dolor sit amet  Phasellus
     TODO  NINJW workout                     2024-04-08 deadline
+
+    $ k BACKLOG | grep ISD
+    TODO  ISD   Lorem ipsum dolor sit amet  Phasellus
+    TODO  ISD   ipsum dolor sit amet  Phasellus
+    TODO  ISD   dolor sit amet  Phasellus
+
+> NOTE: see the 'Attention Unix ninjas' on how to use 'k' as a alias for kanban.
+
 
 ## Configuration 
 
