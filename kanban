@@ -96,7 +96,11 @@ align(){
 show(){
   cols="$(for column in "${columns[@]}"; do printf "%s," "$column"; done)"
   [[ ! -f "$KANBANFILE" ]] && touch "$KANBANFILE" 
-  clear; { echo -e "${cols}"; cat "$KANBANFILE";  } | columnize | more
+  clear; { 
+    echo "$1"
+    echo -e "${cols}"; 
+    if [[ -n $1 ]]; then cat "$KANBANFILE" | grep "$1"; else cat "$KANBANFILE"; fi 
+  } | columnize | more
 }
 
 update_item_status(){

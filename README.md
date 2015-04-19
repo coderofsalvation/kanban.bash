@@ -28,6 +28,13 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
 
 > NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
 
+## Kanban board grep 
+
+    $ ./kanban show PERSONAL 
+
+This will show a kanban board with todo's which only match 'PERSONAL'.
+Nice to get project-specific kanban overviews.
+
 ## Simple listing of status 
 
     $ ./kanban TODO 
