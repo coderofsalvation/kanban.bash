@@ -61,7 +61,7 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
     $ kanban
     Usage:
 
-      kanban show                             # show ascii kanban board
+      kanban show [grep string]               # show ascii kanban board
       kanban <id>                             # edit or update item 
       kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
       kanban <status>                         # show only todo items with this status 
