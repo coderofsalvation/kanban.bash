@@ -82,11 +82,15 @@ columnize(){
     echo -e "|\n|" >> $TMP.col.$i
     statuslines="$(echo "$lines" | tail -n+2 | grep -n -F "$status")"
     echo "$statuslines" | sed 's/:/,/g' | printcsv \
-      | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' >> $TMP.col.$i
+      | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' | sort -k2 | align >> $TMP.col.$i
     do_alert "$statuslines" ${maximum_todo["$status"]} $TMP.col.$i
     i=$((i+1))
   done 
   pr -m -t -w$X -S"  " $TMP.col.*; rm $TMP.col.* # print and cleanup
+}
+
+align(){
+  cat - | awk '{ for(i=3;i<=NF;i++){ $2=$2" "$i } printf "%-5s %s\n", $1,$2 ; }'
 }
 
 show(){
