@@ -30,26 +30,25 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
 
 ## Kanban board grep 
 
-    $ ./kanban show PERSONAL 
+    $ ./kanban show PERSONAL | grep -v deadline
 
-This will show a kanban board with todo's which only match 'PERSONAL'.
+This will show a kanban board with todo's which only match 'PERSONAL' excluding deadlines.
 Nice to get project-specific kanban overviews.
 
 ## Simple listing of status 
 
-    $ ./kanban TODO 
+> NOTE: from here we use the k-alias, see the 'Attention Unix ninjas' on how to use it 
+
+    $ k TODO 
     TODO  ISD   Lorem                       senectus
     TODO  PJGE  Lorem ipsum dolor sit amet  consectetuer adipiscing                   
     TODO  ISD   Lorem ipsum dolor sit amet  Phasellus
     TODO  NINJW workout                     2024-04-08 deadline
 
-    $ k BACKLOG | grep ISD
+    $ k BACKLOG | grep ISD | grep -v deadline
     TODO  ISD   Lorem ipsum dolor sit amet  Phasellus
     TODO  ISD   ipsum dolor sit amet  Phasellus
     TODO  ISD   dolor sit amet  Phasellus
-
-> NOTE: see the 'Attention Unix ninjas' on how to use 'k' as a alias for kanban.
-
 
 ## Configuration 
 
@@ -78,6 +77,15 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
 
 ## Attention UNIX ninjas 
 
+> type 'k' instead of './kanban' 
+
+    $ cp kanban ~/bin 
+    $ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
+    $ echo 'alias k=kanban'          >> ~/.bashrc
+    $ source ~/.bashrc
+
+(now all terminals will recognize 'k' as a command)
+
 > Cleanup your kanban board with some bash-fu:
 
     $ for i in {19,36,49}; do kanban $i BACKLOG; done
@@ -89,12 +97,6 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
 
     $ sed -i 's/FOO/BAR/g' ~/.kanban.csv
     
-> type 'k' instead of './kanban' 
-
-    $ cp kanban ~/bin 
-    $ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
-    $ echo 'alias k=kanban'          >> ~/.bashrc
-
 > Open a terminal on an extra monitor/screen/tmux:
 
     $ watch kanban show
