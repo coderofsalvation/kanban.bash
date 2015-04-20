@@ -2,8 +2,6 @@ KANBAN.bash
 ===========
 commandline asciii kanban board for minimalist productivity bash hackers (csv-based)
 
-## IMPORTANT: recently a bug has been introduced. Please update the csv manually, sorry for the convenience.
-
 ## Install
 
     $ wget "https://github.com/coderofsalvation/kanban.bash/blob/master/kanban"

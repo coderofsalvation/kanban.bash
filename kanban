@@ -80,9 +80,9 @@ columnize(){
   for status in "${statuses[@]}"; do 
     echo "| $status" > $TMP.col.$i
     echo -e "|\n|" >> $TMP.col.$i
-    statuslines="$(echo "$lines" | tail -n+2 | grep -n -F "$status")"
+    statuslines="$(echo "$lines" | tail -n+2 | grep -F "$status")"
     echo "$statuslines" | sed 's/:/,/g' | printcsv \
-      | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' | sort -k2 | align >> $TMP.col.$i
+      | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' | align >> $TMP.col.$i
     do_alert "$statuslines" ${maximum_todo["$status"]} $TMP.col.$i
     i=$((i+1))
   done 
@@ -99,7 +99,7 @@ show(){
   clear; { 
     echo "$1"
     echo -e "${cols}"; 
-    if [[ -n $1 ]]; then cat "$KANBANFILE" | grep "$1"; else cat "$KANBANFILE"; fi 
+    if [[ -n $1 ]]; then cat -n "$KANBANFILE" | grep "$1"; else cat -n "$KANBANFILE"; fi 
   } | columnize | more
 }
 
