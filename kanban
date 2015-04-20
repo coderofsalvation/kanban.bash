@@ -108,7 +108,8 @@ update_item_status(){
   [[ ${#item} == 0 ]] && echo "item $1 not found" && exit 1 
   if [[ -n "$2" ]]; then  # status change 
     status="$(echo "$item" | awk -F',' '{ print $1 }')"
-    sed -i "s|$item|${item/$status/$2}|g" $KANBANFILE 
+    [[ "$2" =~ "DONE" ]] && date="$(date "+%Y-%m-%d %H:%M")"
+    sed -i "s|$item|${item/$status/$2},\"$date\"|g" $KANBANFILE 
     echo "$status -> $2"
   fi
 }
