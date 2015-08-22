@@ -18,6 +18,8 @@
 #   You can switch context (e.g. work vs home vs project x ) like so:
 # 
 #   KANBANFILE=~/.kanban.foo.csv kanban show
+#
+#   KANBANFILE env-var is not needed when a .kanban.csv file is present in the current working dir
 # 
 # Copyright (C) 2015, Leon van Kammen / Coder of Salvation 
 #  
@@ -35,7 +37,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 TMP=~/.kanban.tmp
-read X Y <<< `tput cols; tput lines` # get size of terminal window
+X=$(tput cols)   # get size of terminal window
+Y=$(tput lines)  # 
+[[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
 [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
 
 config_example="# kanban config file
