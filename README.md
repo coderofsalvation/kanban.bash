@@ -9,7 +9,7 @@ commandline asciii kanban board for minimalist productivity bash hackers (csv-ba
   
 ## Show me the kanban board!
 
-    $ ./kanban add TODO PERSONAL buy rose for girlfriend foo bar
+    $ ./kanban add TODO PERSONAL "buy rose for girlfriend foo bar"
     $ ./kanban show
 
 <img alt="" src=".res/board.png"/>
@@ -74,6 +74,24 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
       You can switch context (e.g. work vs home vs project x ) like so:
 
       KANBANFILE=~/.kanban.foo.csv kanban show
+
+## Interactive insertion *adviced*
+
+Safest way to keep the CSV sane:
+
+    ./kanban add
+    enter description:
+    > do laundry
+    enter one of statuses: BACKLOG TODO IN_PROGRESS HOLD DONE
+    > TODO
+    enter one of tags: projectA, projectB 
+    > 
+
+## Small terminal support
+
+No widescreen? Get a simplified kanban board like so:
+
+    SMALLSCREEN=1    # uncomment in source 
 
 ## Attention UNIX ninjas 
 

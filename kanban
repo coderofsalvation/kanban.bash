@@ -37,19 +37,22 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 TMP=~/.kanban.tmp
-X=$(tput cols)   # get size of terminal window
-Y=$(tput lines)  # 
+X=$(tput cols)    # get size of terminal window
+Y=$(tput lines)   # 
+#SMALLSCREEN=1    # uncomment to get simplified kanban board
 [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
 [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
 
 config_example="# kanban config file
 
 # kanban config file
-statuses=('BACKLOG' 'TODO' 'IN_PROGRESS' 'HOLD' 'DONE') 
+statuses=('BACKLOG' 'TODO' 'IN_PROGRESS' 'DONE') 
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -A maximum_todo
-maximum_todo['IN_PROGRESS']=6
+maximum_todo['TODO']=4
+maximum_todo['HOLD']=5
+maximum_todo['IN_PROGRESS']=4
 "
 
 createconfig(){
@@ -60,7 +63,22 @@ createconfig(){
   echo "$config_example" > ~/.kanban.conf 
 }
 
+get_tags(){
+  cat $KANBANFILE | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+2 | sort | uniq | tr '\n' ' '
+}
+
+add_interactive(){
+  echo "enter description:"
+  read -p "> " description 
+  echo "enter one of statuses: ${statuses[@]}"
+  read -p "> " status
+  echo "enter one of tags: $(get_tags)"
+  read -p "> " tag
+  add "$status" "$tag" "$description"
+}
+
 add(){
+  [[ ! -n $1 ]] && { add_interactive "$@"; return 0; }
   [[ ! "${statuses[*]}" =~ "$1" ]] && echo "invalid status $1 (possible: ${statuses[*]})" && exit 1 
   csvline="$( for col in "$@"; do printf "%s" "\"$col\","; done )"
   echo "${csvline:0:$((${#csvline}-1))}" >> $KANBANFILE 
@@ -82,6 +100,7 @@ columnize(){
   rm $TMP.col.* &>/dev/null
   echo -e "$header";
   for status in "${statuses[@]}"; do 
+    [[ -n $SMALLSCREEN && $status =~ "DONE"|"BACKLOG" ]] && continue
     echo "| $status" > $TMP.col.$i
     echo -e "|\n|" >> $TMP.col.$i
     statuslines="$(echo "$lines" | tail -n+2 | grep -F "$status")"
@@ -104,7 +123,10 @@ show(){
     echo "$1"
     echo -e "${cols}"; 
     if [[ -n $1 ]]; then cat -n "$KANBANFILE" | grep "$1"; else cat -n "$KANBANFILE"; fi 
-  } | columnize | more
+  } | while read line; do 
+    if [[ -n $SMALLSCREEN ]]; then cat - | grep -v DONE 
+    else cat - ; fi
+  done | columnize | more
 }
 
 update_item_status(){
