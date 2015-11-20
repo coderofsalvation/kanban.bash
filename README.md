@@ -63,50 +63,6 @@ Obviously the person who assigned this todo should rethink it, and chop it up in
 
 Here you can see all todo's which were 'touched' in august 2015
 
-## Statistics
-
-With the power of grep you can get overviews:
-
-    $ k list | k histogram status
-
-                DONE   155 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-             BACKLOG    73 ▆▆▆▆▆▆▆▆▆▆ 
-                HOLD     9 ▆▆ 
-                TODO     5 ▆ 
-               DOING     5 ▆ 
-    
-    $ k list 2015-08 | k histogram status
-
-                DONE   155 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-             BACKLOG    73 ▆▆▆▆▆▆▆▆▆▆ 
-                HOLD     9 ▆▆ 
-                TODO     5 ▆ 
-               DOING     5 ▆ 
-
-    $ k list DONE 2015-08 | k histogram tag
-
-          projectfoo    62 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-          opensource    43 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-            projectX     3 ▆ 
-               admin     2 ▆ 
-
-    $ k list | grep projectfoo | k histogram status
-
-                DONE    56 ▆▆▆▆▆▆▆▆ 
-             BACKLOG    33 ▆▆▆▆▆ 
-                HOLD     6 ▆ 
-                TODO     2 ▆ 
-               DOING     1 ▆ 
-
-View which projects were put on hold at least 2 times in 2014:
-
-    $ k list HDHD 2014 | k histogram tag            
-
-       project30     6 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-       project40     4 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-       project20     4 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
-       project10     3 ▆▆▆▆▆▆▆▆▆▆ 
-
 ## Configuration 
 
 see ~/.kanban.conf (gets created automatically).
@@ -125,7 +81,7 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
       kanban list                             # list all todos (heavy)
       kanban tags                             # list all submitted tags
       kanban add <status> <tag> <description> # add item (use quoted strings for args)  
-      kanban histogram <status|tag>           # generates histogram when piped (see examples)
+      kanban stats <status|tag>           # generates stats when piped (see examples)
 
       NOTE #1: statuses can be managed in ~/.kanban.conf
       NOTE #2: the database csv can be found in ~/.kanban.csv
@@ -134,7 +90,7 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
 
       kanban add TODO projectX "do foo"
       kanban TODO DOING HOLD                 
-      kanban DOING | kanban histogram tag
+      kanban DOING | kanban stats tag
 
     Environment:
 
@@ -193,6 +149,60 @@ No widescreen? Get a simplified kanban board like so:
     $ k 34 DONE 
     TODO -> DONE
     $ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"
+
+## Statistics
+
+With the power of grep you can get overviews:
+
+    $ k stats status
+
+                DONE   155 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+             BACKLOG    73 ▆▆▆▆▆▆▆▆▆▆ 
+                HOLD     9 ▆▆ 
+                TODO     5 ▆ 
+               DOING     5 ▆ 
+    
+    $ k status 2015-08
+
+                DONE   155 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+             BACKLOG    73 ▆▆▆▆▆▆▆▆▆▆ 
+                HOLD     9 ▆▆ 
+                TODO     5 ▆ 
+               DOING     5 ▆ 
+
+    $ k stats status DONE 2015-08 
+
+          projectfoo    62 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+          opensource    43 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+            projectX     3 ▆ 
+               admin     2 ▆ 
+
+    $ k stats status projectfoo 
+
+                DONE    56 ▆▆▆▆▆▆▆▆ 
+             BACKLOG    33 ▆▆▆▆▆ 
+                HOLD     6 ▆ 
+                TODO     2 ▆ 
+               DOING     1 ▆ 
+
+What are are typical tasktransitions:
+
+    $ k stats history
+                  T   129 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+            BTDHDHD    16 ▆▆▆ 
+                  T   129 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+                 BD    16 ▆▆▆ 
+
+
+View which projects were put on hold at least 2 times in 2014:
+
+    $ k stats history HDHD 2014 | k stats tag            
+
+       project30     6 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+       project40     4 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+       project20     4 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
+       project10     3 ▆▆▆▆▆▆▆▆▆▆ 
+
     
 ## Why 
 

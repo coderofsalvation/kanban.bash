@@ -12,7 +12,7 @@
 #   kanban list                             # list all todos (heavy)
 #   kanban tags                             # list all submitted tags
 #   kanban add <status> <tag> <description> # add item (use quoted strings for args)  
-#   kanban histogram <status|tag>           # generates histogram when piped (see examples)
+#   kanban stats <status|tag>           # generates stats when piped (see examples)
 # 
 #   NOTE #1: statuses can be managed in ~/.kanban.conf
 #   NOTE #2: the database csv can be found in ~/.kanban.csv
@@ -21,7 +21,7 @@
 # 
 #   kanban add TODO projectX "do foo"
 #   kanban TODO DOING HOLD                 
-#   kanban DOING | kanban histogram tag
+#   kanban DOING | kanban stats tag
 # 
 # Environment:
 # 
@@ -111,20 +111,23 @@ add(){
   echo "${csvline:0:$((${#csvline}-1))}" >> $KANBANFILE 
 }
 
-histogram(){
+stats(){
   [[ ! -n $1 ]] && exit 1
-  field=$1
-  [[ "$1" == "status" ]] && field=2
-  [[ "$1" == "tag" ]] && field=3
+  create_index
+  field=$1; shift; tags="$*"
+  greppattern="(${tags// /\|})"
+  [[ "$field" == "status" ]]  && field=2
+  [[ "$field" == "tag" ]]     && field=3
+  [[ "$field" == "history" ]] && field=5
   [[ -n $2 ]] && WIDTH=$2   || WIDTH=20; 
   [[ -n $3 ]] && PADDING=$3 || PADDING=20;
   {
     if [[ -n $PADDING ]]; then 
-      cat - | awk '{h[$'"$field"']++}END{for(i in h){print h[i],i|"sort -rn|head -20"}}' |awk '!max{max=$1;}{r="";i=s='$WIDTH'*$1/max;while(i-->0)r=r"'"${BAR[5]}"'";printf "%'$PADDING's %5d %s %s",$2,$1,r,"\n";}'
-    else
-      cat - | awk '{h[$'"$field"']++}END{for(i in h){print h[i],i|"sort -rn|head -20"}}' |awk '!max{max=$1;}{r="";i=s='$WIDTH'*$1/max;while(i-->0)r=r"'"${BAR[5]}"'";printf "%s %s: %5d\n",r,$2,$1;}' | tr -s " " 
+      cat $TMP.index | grep -E "$greppattern" | gawk -vFS='^"|","|"$|",|,"|,' '{h[$'"$field"']++}END{for(i in h){print h[i],i|"sort -rn|head -20"}}' |gawk '!max{max=$1;}{r="";i=s='$WIDTH'*$1/max;while(i-->0)r=r"'"${BAR[5]}"'";printf "%'$PADDING's %5d %s %s",$2,$1,r,"\n";}'
+    else                                                                                                                                                   
+      cat $TMP.index | grep -E "$greppattern" | gawk -vFS='^"|","|"$|",|,"|,' '{h[$'"$field"']++}END{for(i in h){print h[i],i|"sort -rn|head -20"}}' |gawk '!max{max=$1;}{r="";i=s='$WIDTH'*$1/max;while(i-->0)r=r"'"${BAR[5]}"'";printf "%s %s: %5d\n",r,$2,$1;}' | tr -s " " 
     fi 
-  } | grep -v 'tag\|status\|-[ ]\+1' | grep -v '^[ ]\+1' # remove header rows
+  } | grep -v 'tag\|status\|history\|-[ ]\+1' | grep -v '^[ ]\+1' # remove header rows
 }
 
 init(){                          
