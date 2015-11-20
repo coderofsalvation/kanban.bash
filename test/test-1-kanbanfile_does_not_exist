@@ -1,0 +1,1 @@
+KANBANFILE=foo ../kanban | grep -E "(foo|does not exist)"

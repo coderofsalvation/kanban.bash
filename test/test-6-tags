@@ -1,0 +1,4 @@
+KANBANFILE="test.csv" ../kanban tags > /tmp/lines
+lines="$( cat /tmp/lines )"
+if ! (( ${#lines} == 62 )); then exit 1; fi
+

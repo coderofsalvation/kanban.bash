@@ -1,0 +1,2 @@
+:>test.csv
+KANBANFILE="test.csv" ../kanban | head -n1 | grep Usage || exit 1

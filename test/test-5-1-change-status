@@ -1,0 +1,9 @@
+for((i=1;i<80;i+=5)); do 
+  KANBANFILE="test.csv" ../kanban $i DOING
+  KANBANFILE="test.csv" ../kanban $i HOLD
+  KANBANFILE="test.csv" ../kanban $i DOING
+  KANBANFILE="test.csv" ../kanban $i HOLD
+  KANBANFILE="test.csv" ../kanban $i DOING
+done
+
+KANBANFILE="test.csv" ../kanban list | grep TDHDHD || exit 1

@@ -4,21 +4,31 @@
 #
 # Usage:
 # 
+#   kanban add                              # add item interactive (adviced) 
 #   kanban show                             # show ascii kanban board
 #   kanban <id>                             # edit or update item 
 #   kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
-#   kanban <status>                         # show only todo items with this status 
-#   kanban add <status> <col1> <col2> ...   # add item 
+#   kanban <status> .....                   # list only todo items with this status(es)
+#   kanban list                             # list all todos (heavy)
+#   kanban tags                             # list all submitted tags
+#   kanban add <status> <tag> <description> # add item (use quoted strings for args)  
+#   kanban histogram <status|tag>           # generates histogram when piped (see examples)
 # 
 #   NOTE #1: statuses can be managed in ~/.kanban.conf
 #   NOTE #2: the database csv can be found in ~/.kanban.csv
+# 
+# Examples:
+# 
+#   kanban add TODO projectX "do foo"
+#   kanban TODO DOING HOLD                 
+#   kanban DOING | kanban histogram tag
 # 
 # Environment:
 # 
 #   You can switch context (e.g. work vs home vs project x ) like so:
 # 
 #   KANBANFILE=~/.kanban.foo.csv kanban show
-#
+# 
 #   KANBANFILE env-var is not needed when a .kanban.csv file is present in the current working dir
 # 
 # Copyright (C) 2015, Leon van Kammen / Coder of Salvation 
@@ -36,12 +46,16 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
+BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
 TMP=~/.kanban.tmp
 X=$(tput cols)    # get size of terminal window
 Y=$(tput lines)   # 
-SMALLSCREEN=1    # uncomment to get simplified kanban board
-[[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
-[[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
+#SMALLSCREEN=1    # uncomment to get simplified kanban board
+if [[ ! -n $KANBANFILE ]]; then 
+  [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
+  [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
+fi
+[[ ! -f $KANBANFILE ]] && { echo "$KANBANFILE does not exist"; exit; }
 
 config_example="# kanban config file
 
@@ -76,7 +90,7 @@ createconfig(){
   echo "$config_example" > ~/.kanban.conf 
 }
 
-get_tags(){
+tags(){
   cat $KANBANFILE | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+2 | sort | uniq | tr '\n' ' '
 }
 
@@ -85,7 +99,7 @@ add_interactive(){
   read -p "> " description 
   echo "enter one of statuses: ${statuses[@]}"
   read -p "> " status
-  echo "enter one of tags: $(get_tags)"
+  echo "enter one of tags: $(tags)"
   read -p "> " tag
   add "$status" "$tag" "$description"
 }
@@ -93,8 +107,24 @@ add_interactive(){
 add(){
   [[ ! -n $1 ]] && { add_interactive "$@"; return 0; }
   [[ ! "${statuses[*]}" =~ "$1" ]] && echo "invalid status $1 (possible: ${statuses[*]})" && exit 1 
-  csvline="$( for col in "$@"; do printf "%s" "\"$col\","; done )"
+  csvline="$( for col in "$@"; do printf "%s" "\"$col\","; done )\"${1:0:1}\",\"$(get_current_date)\"\""
   echo "${csvline:0:$((${#csvline}-1))}" >> $KANBANFILE 
+}
+
+histogram(){
+  [[ ! -n $1 ]] && exit 1
+  field=$1
+  [[ "$1" == "status" ]] && field=2
+  [[ "$1" == "tag" ]] && field=3
+  [[ -n $2 ]] && WIDTH=$2   || WIDTH=20; 
+  [[ -n $3 ]] && PADDING=$3 || PADDING=20;
+  {
+    if [[ -n $PADDING ]]; then 
+      cat - | awk '{h[$'"$field"']++}END{for(i in h){print h[i],i|"sort -rn|head -20"}}' |awk '!max{max=$1;}{r="";i=s='$WIDTH'*$1/max;while(i-->0)r=r"'"${BAR[5]}"'";printf "%'$PADDING's %5d %s %s",$2,$1,r,"\n";}'
+    else
+      cat - | awk '{h[$'"$field"']++}END{for(i in h){print h[i],i|"sort -rn|head -20"}}' |awk '!max{max=$1;}{r="";i=s='$WIDTH'*$1/max;while(i-->0)r=r"'"${BAR[5]}"'";printf "%s %s: %5d\n",r,$2,$1;}' | tr -s " " 
+    fi 
+  } | grep -v 'tag\|status\|-[ ]\+1' | grep -v '^[ ]\+1' # remove header rows
 }
 
 init(){                          
@@ -105,7 +135,7 @@ list(){
   tags="$*"
   greppattern="(${tags// /\|})"
   create_index
-  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,flags,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols)
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols)
   rm $TMP.*
 }
 
@@ -153,13 +183,23 @@ show(){
   done | columnize | more
 }
 
+get_current_date(){ date "+%Y-%m-%d@%H:%M"; }
+
 update_item_status(){
   item="$( cat $KANBANFILE | awk "{ if (NR==$1) print \$0 }" )"
   [[ ${#item} == 0 ]] && echo "item $1 not found" && exit 1 
   if [[ -n "$2" ]]; then  # status change 
-    status="$(echo "$item" | awk -F',' '{ print $1 }')"
-    [[ "$2" =~ "DONE" ]] && date="$(date "+%Y-%m-%d %H:%M")"
-    sed -i "s|$item|${item/$status/$2},\"$date\"|g" $KANBANFILE 
+    status="$(echo "$item" | awk -F',' '{ print $1 }' | sed 's/"//g' )"
+    flags="$(echo "$item"  | awk -F',' '{ print $4 }' | sed 's/"//g' )"
+    dates="$(echo "$item"  | awk -F',' '{ print $5 }' | sed 's/"//g' )"
+    newflags="$flags${2:0:1}"
+    newdates="$dates $(get_current_date)"
+    [[ "$2" =~ "DONE" ]] && date="$(get_current_date)"
+    newitem="$item"
+    newitem="${newitem/$status/$2}"
+    newitem="${newitem/$flags/$newflags}"
+    newitem="${newitem/$dates/$newdates}"
+    sed -i "s|$item|$newitem|g" $KANBANFILE 
     echo "$status -> $2"
   fi
 }
@@ -205,4 +245,4 @@ if [[ -n "$1" ]]; then
     *)       "$@"
              ;;
   esac
-else grep -A17 "^# Usage:" "$0" | sed 's/^# //g'; fi
+else grep -A28 "^# Usage:" "$0" | sed 's/^# //g'; fi

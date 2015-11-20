@@ -1,0 +1,6 @@
+KANBANFILE="test.csv" ../kanban 1 DOING
+
+KANBANFILE="test.csv" ../kanban list | grep DOING | tee /tmp/lines
+lines="$( cat /tmp/lines | wc -l )"
+if (( ! lines == 1)); then exit 1; fi
+

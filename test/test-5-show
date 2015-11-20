@@ -1,0 +1,4 @@
+KANBANFILE="test.csv" ../kanban show | grep -E "(1|2|3)" > /tmp/lines
+lines="$( cat /tmp/lines | wc -l )"
+if ! (( lines == 3)); then exit 1; fi
+

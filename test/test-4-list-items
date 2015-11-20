@@ -1,0 +1,12 @@
+KANBANFILE="test.csv" ../kanban list | tee /tmp/lines 
+lines="$( cat /tmp/lines | wc -l )"
+if ((lines<3)); then exit 1; fi
+
+KANBANFILE="test.csv" ../kanban list TODO | tee /tmp/lines
+lines="$( cat /tmp/lines | wc -l )"
+if (( ! lines == 3)); then exit 1; fi
+
+KANBANFILE="test.csv" ../kanban list DOING | tee /tmp/lines
+lines="$( cat /tmp/lines | wc -l )"
+if (( ! lines == 2)); then exit 1; fi
+
