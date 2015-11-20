@@ -1,6 +1,10 @@
-KANBAN.bash 
-===========
-commandline todomanager / kanbanboard csv-viewer for minimalist productivity bash hackers
+      __  __   ____   __  _ _____   ____   __  _   _____   ____    ____  _   _ 
+     |  |/  / / () \ |  \| || () ) / () \ |  \| |__| () ) / () \  (_ (_`| |_| |
+     |__|\__\/__/\__\|_|\__||_()_)/__/\__\|_|\__|__|_()_)/__/\__\.__)__)|_| |_|
+
+personal commandline todomanager / kanbanboard csv-viewer for minimalist productivity bash hackers.
+
+> WHY: bitbucket/github/issuetrackers are great for teams, but how to manage todo's on a macro- or microlevel? KANBAN.bash can be a very simple but powerful tool to manage and measure productivity.
 
 ## Install
 
