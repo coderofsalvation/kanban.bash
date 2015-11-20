@@ -35,25 +35,38 @@
 #  
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
 TMP=~/.kanban.tmp
 X=$(tput cols)    # get size of terminal window
 Y=$(tput lines)   # 
-#SMALLSCREEN=1    # uncomment to get simplified kanban board
+SMALLSCREEN=1    # uncomment to get simplified kanban board
 [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
 [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
 
 config_example="# kanban config file
 
 # kanban config file
-statuses=('BACKLOG' 'TODO' 'IN_PROGRESS' 'DONE') 
+statuses=('BACKLOG' 'TODO' 'DOING' 'DONE') 
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -A maximum_todo
 maximum_todo['TODO']=4
 maximum_todo['HOLD']=5
-maximum_todo['IN_PROGRESS']=4
+maximum_todo['DOING']=4
 "
+
+# usage: fb put <x> <y> <string>
+put() { printf "\x1B["$2";"$1"f$3" "$4"; }
+
+draw_line(){
+  for((i=0;i<$1;i++)); do printf "-"; done
+}
+
+# usage: fb box <x> <y> <width> <height>
+draw_topline(){
+  w=$((X-2)); 
+  printf ${BOX[0]}; draw_line $w; printf "${BOX[2]}\n"
+}
 
 createconfig(){
   [[ -f ~/.kanban.conf ]] && { 
@@ -88,11 +101,24 @@ init(){
   trap "tput cnorm -- normal" 0 1 5    # reset terminal colors to normal
 }
 
+list(){
+  tags="$*"
+  greppattern="(${tags// /\|})"
+  create_index
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,flags,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols)
+  rm $TMP.*
+}
+
 do_alert(){
   nlines=$(echo "$1" | wc -l ) ; maximum=$2 
   if [[ ${#maximum} > 0 ]] && [[ $nlines > $maximum ]]; then 
-    echo -e "\n\n!!! DANGER ZONE ($nlines>$maximum) !!!" >> "$3"
+    echo -e "\n\n!!! alert: number of '$3' items (max $maximum) slows down average productionrate !!!" >> "$4"
   fi
+}
+
+create_index(){
+  rm $TMP.index &>/dev/null
+  cat -n $KANBANFILE | sed 's/^[ ]\+//g;s/\t/,/g' >> $TMP.index
 }
 
 columnize(){
@@ -101,14 +127,13 @@ columnize(){
   echo -e "$header";
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN && $status =~ "DONE"|"BACKLOG" ]] && continue
-    echo "| $status" > $TMP.col.$i
-    echo -e "|\n|" >> $TMP.col.$i
-    statuslines="$(echo "$lines" | tail -n+2 | grep -F "$status")"
-    echo "$statuslines" | sed 's/:/,/g' | printcsv \
-      | awk '{ $2=""; print "|" $0 }' | sed 's/20[0-9][0-9].*//g' | align >> $TMP.col.$i
-    do_alert "$statuslines" ${maximum_todo["$status"]} $TMP.col.$i
+    echo "$status" > $TMP.col.$i
+    echo -e "\n" >> $TMP.col.$i
+    cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 >> $TMP.col.$i
+    echo "$( cat $TMP.col.$i | sed 's/^/| /g')" > $TMP.col.$i
     i=$((i+1))
   done 
+  draw_topline
   pr -m -t -w$X -S"  " $TMP.col.*; rm $TMP.col.* # print and cleanup
 }
 
@@ -117,12 +142,11 @@ align(){
 }
 
 show(){
-  cols="$(for column in "${columns[@]}"; do printf "%s," "$column"; done)"
   [[ ! -f "$KANBANFILE" ]] && touch "$KANBANFILE" 
-  clear; { 
+  create_index
+  clear;  { 
     echo "$1"
-    echo -e "${cols}"; 
-    if [[ -n $1 ]]; then cat -n "$KANBANFILE" | grep "$1"; else cat -n "$KANBANFILE"; fi 
+    if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
   } | while read line; do 
     if [[ -n $SMALLSCREEN ]]; then cat - | grep -v DONE 
     else cat - ; fi
@@ -153,14 +177,13 @@ update_item(){
   echo "updated item $1"
 }
 
-view_status(){
-  grep "$1" "$KANBANFILE" | printcsv 
-}
-
 printcsv(){
-  cat - | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"|,'            \
-    '{out=""; for(i=1;i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
-    max=99999 | sed 's/""/"/g' | column -t -s $'\t'                   
+  csv="$HEADER$(cat -)"
+  [[ ! -n $1 ]] && max=999999 || max=$1
+  [[ ! -n $2 ]] && min=1 || min=$1
+  echo -e "$csv" | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"|,'            \
+    '{out=""; for(i='$min';i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
+    max=$max | sed 's/""/"/g' | column -t -s $'\t'                   
 }
 
 # source config
@@ -172,8 +195,7 @@ init
 
 if [[ -n "$1" ]]; then 
 
-  [[ "${statuses[*]}" =~ "$1" ]] && view_status "$1" && exit 0
-
+  [[ "${statuses[*]}" =~ "$1" ]] && { list "$@" ; exit 0; }
   case "$1" in 
 
     [0-9]*)  [[ -n $2 ]] && [[ "${statuses[*]}" =~ "$2" ]] && update_item_status "$@" && exit 0
