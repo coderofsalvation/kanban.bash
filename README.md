@@ -112,11 +112,12 @@ Safest way to keep the CSV sane:
     enter one of tags: projectA, projectB 
     > 
 
-## Small terminal support
+## Customized kanban.
 
-No widescreen? Get a simplified kanban board like so:
+As mentioned earlier, the status/categorynames can be changed in the config-file.
+No widescreen? Show a simplified kanban board by hiding some categories in the `kanban`-bashscript:
 
-    SMALLSCREEN=1    # uncomment in source 
+    #SMALLSCREEN=('HOLD' 'DOING')   # uncomment to only show these fields in kanban asciiboard
 
 ## Attention UNIX ninjas 
 

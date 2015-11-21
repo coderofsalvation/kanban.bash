@@ -50,7 +50,7 @@ BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
 TMP=~/.kanban.tmp
 X=$(tput cols)    # get size of terminal window
 Y=$(tput lines)   # 
-#SMALLSCREEN=1    # uncomment to get simplified kanban board
+#SMALLSCREEN=('HOLD' 'DOING' 'CODE')  # uncomment to get simplified kanban board
 if [[ ! -n $KANBANFILE ]]; then 
   [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
   [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
@@ -60,13 +60,13 @@ fi
 config_example="# kanban config file
 
 # kanban config file
-statuses=('BACKLOG' 'TODO' 'DOING' 'DONE') 
+statuses=('BACKLOG' 'HOLD' 'DOING' 'CODE' 'DONE') 
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -A maximum_todo
-maximum_todo['TODO']=4
 maximum_todo['HOLD']=5
 maximum_todo['DOING']=4
+maximum_todo['CODE']=3
 "
 
 # usage: fb put <x> <y> <string>
@@ -159,7 +159,7 @@ columnize(){
   rm $TMP.col.* &>/dev/null
   echo -e "$header";
   for status in "${statuses[@]}"; do 
-    [[ -n $SMALLSCREEN && $status =~ "DONE"|"BACKLOG" ]] && continue
+    [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
     echo "$status" > $TMP.col.$i
     echo -e "\n" >> $TMP.col.$i
     cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 >> $TMP.col.$i
@@ -180,10 +180,7 @@ show(){
   clear;  { 
     echo "$1"
     if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
-  } | while read line; do 
-    if [[ -n $SMALLSCREEN ]]; then cat - | grep -v DONE 
-    else cat - ; fi
-  done | columnize | more
+  } | columnize | more
 }
 
 get_current_date(){ date "+%Y-%m-%d@%H:%M"; }
