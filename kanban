@@ -49,6 +49,7 @@
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
 BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
 TMP=~/.kanban.tmp
+locale | grep -s "UTF-8" && UTF8=1
 X=$(tput cols)    # get size of terminal window
 Y=$(tput lines)   # 
 #SMALLSCREEN=('HOLD' 'DOING' 'CODE')  # uncomment to get simplified kanban board
@@ -172,8 +173,14 @@ columnize(){
     #echo "$( cat $TMP.col.$i )" > $TMP.col.$i
     i=$((i+1))
   done 
-  pr -m -t -w$X -S"      "  $TMP.col.* |  sed 's/| /├╴/g;s/~/━/g;s/|+/┡━/g' # nice utf8 chars
+  pr -m -t -w$X -S"      "  $TMP.col.* | lines 
   rm $TMP.col.* # print and cleanup
+}
+
+lines(){
+  if [[ -n $UTF8 ]]; then
+    cat - | sed 's/| /├╴/g;s/~/━/g;s/|+/┡━/g' # nice utf8 lines
+  else cat - | sed 's/~/-/g;s/|+/|/g'; fi
 }
 
 align(){
