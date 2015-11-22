@@ -5,7 +5,7 @@
 # Usage:
 # 
 #   kanban add                              # add item interactive (adviced) 
-#   kanban show                             # show ascii kanban board
+#   kanban show [status] ....               # show ascii kanban board [with status]
 #   kanban <id>                             # edit or update item 
 #   kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
 #   kanban <status> .....                   # list only todo items with this status(es)
@@ -190,6 +190,9 @@ align(){
 show(){
   [[ ! -f "$KANBANFILE" ]] && touch "$KANBANFILE" 
   create_index
+  if [[ -n $1 ]]; then 
+    statuses=(); for status in $*; do statuses+=($status); done 
+  fi
   clear;  { 
     echo "$1"
     if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
