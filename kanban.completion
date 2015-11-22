@@ -5,12 +5,11 @@ _kanban(){
   case $word in 
 
     k|kanban)   COMPREPLY=( $(compgen -W "add show list stats tags" -- $cur ) )
-              ;;
-    add)      COMPREPLY=( $(compgen -W "$(kanban get_statuses)" -- $cur ) )
-              ;;
-    $(kanban get_statuses)) 
-              COMPREPLY="flop"
-              ;;
+                ;;
+    add)        COMPREPLY=( $(compgen -W "$(kanban get_statuses)" -- $cur ) )
+                ;;
+    list|stats) COMPREPLY=( $(compgen -W "$(kanban get_statuses) $(kanban tags)" -- $cur ) )
+                ;;
     
   esac
 }
