@@ -12,7 +12,7 @@
 #   kanban list                             # list all todos (heavy)
 #   kanban tags                             # list all submitted tags
 #   kanban add <status> <tag> <description> # add item (use quoted strings for args)  
-#   kanban stats <status|tag>           # generates stats when piped (see examples)
+#   kanban stats <status|tag> [<str>]       # generates stats 
 # 
 #   NOTE #1: statuses can be managed in ~/.kanban.conf
 #   NOTE #2: the database csv can be found in ~/.kanban.csv
@@ -21,7 +21,8 @@
 # 
 #   kanban add TODO projectX "do foo"
 #   kanban TODO DOING HOLD                 
-#   kanban DOING | kanban stats tag
+#   kanban stats status projectX
+#   kanban stats tag projectX 
 # 
 # Environment:
 # 
@@ -94,6 +95,10 @@ createconfig(){
 
 tags(){
   cat $KANBANFILE | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+2 | sort | uniq | tr '\n' ' '
+}
+
+get_statuses(){
+  echo ${statuses[@]}
 }
 
 add_interactive(){
@@ -246,4 +251,4 @@ if [[ -n "$1" ]]; then
     *)       "$@"
              ;;
   esac
-else grep -A28 "^# Usage:" "$0" | sed 's/^# //g'; fi
+else grep -A29 "^# Usage:" "$0" | sed 's/^# //g'; fi

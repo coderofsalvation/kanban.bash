@@ -186,6 +186,13 @@ With the power of grep you can get overviews:
                 TODO     2 ▆ 
                DOING     1 ▆ 
 
+Lets see what the slacking / project ratio is :)
+
+    $ k stats tag 2015-08
+
+             slacking   76 ▆▆▆▆▆▆▆▆ 
+             projecfoo  36 ▆▆▆▆ 
+
 What are are typical tasktransitions:
 
     $ k stats history
@@ -197,12 +204,16 @@ What are are typical tasktransitions:
 
 View which projects were put on hold at least 2 times in 2014:
 
-    $ k stats history HDHD 2014 | k stats tag            
+    $ k stats history HDHD 2014 
 
        project30     6 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
        project40     4 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
        project20     4 ▆▆▆▆▆▆▆▆▆▆▆▆▆▆ 
        project10     3 ▆▆▆▆▆▆▆▆▆▆ 
+
+## Tab completion 
+
+Somehow source `kanban.completion` in your `~/.bashrc` or just copy it to `/etc/bash_completion.d`
 
     
 ## Why 
@@ -223,5 +234,4 @@ tests oneliners:
 ## Todo 
 
 * more testing
-* tab completion
 * easier way of adding todos
