@@ -168,7 +168,7 @@ columnize(){
   echo -e "$header";
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
-    echo -e "┃ $status\n|+$(strtoline "$status" "~")~\n┆" > $TMP.col.$i
+    echo -e "|_$status\n|+$(strtoline "$status" "~")~\n" > $TMP.col.$i
     cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 | sed 's/^/| /g'  | unexpand >> $TMP.col.$i
     #echo "$( cat $TMP.col.$i )" > $TMP.col.$i
     i=$((i+1))
@@ -179,8 +179,8 @@ columnize(){
 
 lines(){
   if [[ -n $UTF8 ]]; then
-    cat - | sed 's/| /├╴/g;s/~/━/g;s/|+/┡━/g' # nice utf8 lines
-  else cat - | sed 's/~/-/g;s/|+/|/g'; fi
+    cat - | sed 's/| /├╴/g;s/~/━/g;s/|+/┕━/g;s/|_/│ /g' # nice utf8 lines
+  else cat - | sed 's/~/-/g;s/|+/|/g;s/|+/| /g;s/|_/| /g'; fi
 }
 
 align(){
