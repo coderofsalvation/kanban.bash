@@ -72,6 +72,8 @@ maximum_todo['CODE']=3
 # usage: fb put <x> <y> <string>
 put() { printf "\x1B["$2";"$1"f$3" "$4"; }
 
+strtoline(){ for((i=0;i<${#1};i++)); do printf "$2"; done; }
+
 draw_line(){
   for((i=0;i<$1;i++)); do printf "-"; done
 }
@@ -160,14 +162,13 @@ columnize(){
   echo -e "$header";
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
-    echo "$status" > $TMP.col.$i
-    echo -e "\n" >> $TMP.col.$i
-    cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 >> $TMP.col.$i
-    echo "$( cat $TMP.col.$i | sed 's/^/| /g')" > $TMP.col.$i
+    echo -e "┃ $status\n|+$(strtoline "$status" "~")~\n┆" > $TMP.col.$i
+    cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 | sed 's/^/| /g'  | unexpand >> $TMP.col.$i
+    #echo "$( cat $TMP.col.$i )" > $TMP.col.$i
     i=$((i+1))
   done 
-  draw_topline
-  pr -m -t -w$X -S"  " $TMP.col.*; rm $TMP.col.* # print and cleanup
+  pr -m -t -w$X -S"      "  $TMP.col.* |  sed 's/| /├╴/g;s/~/━/g;s/|+/┡━/g' # nice utf8 chars
+  rm $TMP.col.* # print and cleanup
 }
 
 align(){
