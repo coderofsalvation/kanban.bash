@@ -1,0 +1,18 @@
+_kanban(){
+  local word=${COMP_WORDS[$COMP_CWORD-1]}
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  #debug: echo "cur=$cur word='$word' $COMP_CWORD ${#cur} : ${COMP_WORDS[*]}" >> /tmp/log
+  case $word in 
+
+    k|kanban)   COMPREPLY=( $(compgen -W "add show list stats tags" -- $cur ) )
+              ;;
+    add)      COMPREPLY=( $(compgen -W "$(kanban get_statuses)" -- $cur ) )
+              ;;
+    $(kanban get_statuses)) 
+              COMPREPLY="flop"
+              ;;
+    
+  esac
+}
+complete -F _kanban kanban
+complete -F _kanban k
