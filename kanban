@@ -197,6 +197,7 @@ show(){
     echo "$1"
     if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
   } | columnize | more
+  echo ""
 }
 
 get_current_date(){ date "+%Y-%m-%d@%H:%M"; }
