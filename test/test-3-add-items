@@ -1,6 +1,6 @@
 :>test.csv
 for j in 10 20 30 40 50; do 
   for((i=1;i<$j;i++)); do
-    KANBANFILE="test.csv" ../kanban add TODO project$j "fix item $i"
+    KANBANFILE="test.csv" ../kanban add HOLD project$j "fix item $i"
   done
 done
