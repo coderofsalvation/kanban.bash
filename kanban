@@ -57,7 +57,7 @@ if [[ ! -n $KANBANFILE ]]; then
   [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
   [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
 fi
-[[ ! -f $KANBANFILE ]] && { echo "$KANBANFILE does not exist"; exit; }
+[[ ! -f $KANBANFILE ]] && echo "status,tag,description,history,date" > $KANBANFILE
 
 config_example="# kanban config file
 
