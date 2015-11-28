@@ -9,7 +9,7 @@ personal commandline todomanager / kanbanboard csv-viewer for minimalist product
 
 ## Install
 
-    $ wget "https://github.com/coderofsalvation/kanban.bash/blob/master/kanban"
+    $ wget "https://raw.githubusercontent.com/coderofsalvation/kanban.bash/master/kanban"
     $ chmod 755 kanban
   
 ## Show me the kanban board!
