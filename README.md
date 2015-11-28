@@ -74,15 +74,15 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
     $ ./kanban
     Usage:
 
-      kanban add                              # add item interactive (adviced) 
-      kanban show                             # show ascii kanban board
-      kanban <id>                             # edit or update item 
-      kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
-      kanban <status|yyyy-mm-dd> .....        # list only todo items with this status(es) or touched on date(s) 
-      kanban list                             # list all todos (heavy)
-      kanban tags                             # list all submitted tags
-      kanban add <status> <tag> <description> # add item (use quoted strings for args)  
-      kanban stats <status|tag>           # generates stats when piped (see examples)
+      kanban add                                # add item interactive (adviced) 
+      kanban show [status] ....                 # show ascii kanban board [with status]
+      kanban <id>                               # edit or update item 
+      kanban <id> <status>                      # update status of todo id (uses $EDITOR as preferred editor)
+      kanban <status> .....                     # list only todo items with this status(es)
+      kanban list                               # list all todos (heavy)
+      kanban tags                               # list all submitted tags
+      kanban add <status> <tag> <description>   # add item (use quoted strings for args)  
+      kanban stats <status|tag|history> [<str>] # generates stats 
 
       NOTE #1: statuses can be managed in ~/.kanban.conf
       NOTE #2: the database csv can be found in ~/.kanban.csv
@@ -91,7 +91,8 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
 
       kanban add TODO projectX "do foo"
       kanban TODO DOING HOLD                 
-      kanban DOING | kanban stats tag
+      kanban stats status projectX
+      kanban stats tag projectX 
 
     Environment:
 
