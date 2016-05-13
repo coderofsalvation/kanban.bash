@@ -99,8 +99,10 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
       You can switch context (e.g. work vs home vs project x ) like so:
 
       KANBANFILE=~/.kanban.foo.csv kanban show
-
+      KANBANFILE=~/.kanban.foo.csv KANBANCONF=~/.kanban.foo.conf kanban show
+    
       KANBANFILE env-var is not needed when a .kanban.csv file is present in the current working dir
+      KANBANCONF is created automatically if not found
 
 ## Interactive insertion *adviced*
 

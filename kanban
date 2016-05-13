@@ -29,8 +29,10 @@
 #   You can switch context (e.g. work vs home vs project x ) like so:
 # 
 #   KANBANFILE=~/.kanban.foo.csv kanban show
+#   KANBANFILE=~/.kanban.foo.csv KANBANCONF=~/.kanban.foo.conf kanban show
 # 
 #   KANBANFILE env-var is not needed when a .kanban.csv file is present in the current working dir
+#   KANBANCONF is created automatically if not found
 # 
 # Copyright (C) 2015, Leon van Kammen / Coder of Salvation 
 #  
@@ -53,6 +55,7 @@ locale | grep -q "UTF-8" && UTF8=1
 X=$(tput cols)    # get size of terminal window
 Y=$(tput lines)   # 
 #SMALLSCREEN=('HOLD' 'DOING' 'CODE')  # uncomment to get simplified kanban board
+[[ ! -n $KANBANCONF ]] && KANBANCONF=~/.kanban.conf
 if [[ ! -n $KANBANFILE ]]; then 
   [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
   [[ ! -n $KANBANFILE ]] && KANBANFILE=~/".kanban.csv";
@@ -87,11 +90,11 @@ draw_topline(){
 }
 
 createconfig(){
-  [[ -f ~/.kanban.conf ]] && { 
+  [[ -f $KANBANCONF ]] && { 
     read -p "overwrite current config? (y/n)" overwrite; 
     [[ ! "$overwrite" == "y" ]] && echo "aborted" && exit 1;
   }
-  echo "$config_example" > ~/.kanban.conf 
+  echo "$config_example" > $KANBANCONF
 }
 
 tags(){
@@ -244,8 +247,8 @@ printcsv(){
 }
 
 # source config
-[[ ! -f ~/.kanban.conf ]] && { createconfig; }
-source ~/.kanban.conf
+[[ ! -f $KANBANCONF ]] && { createconfig; }
+source $KANBANCONF
 
 # execute main
 init
