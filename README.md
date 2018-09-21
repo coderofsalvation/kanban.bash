@@ -3,10 +3,10 @@
      |__|\__\/__/\__\|_|\__||_()_)/__/\__\|_|\__|__|_()_)/__/\__\.__)__)|_| |_|
 
 <img alt="" src="https://api.travis-ci.org/coderofsalvation/kanban.bash.svg"/>
-personal commandline todomanager / kanbanboard csv-viewer for minimalist productivity bash hackers.
+commandline todomanager for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
 
-> WHY: bitbucket/github/issuetrackers are great for teams, but how to manage todo's on a crossrepo- or microlevel? KANBAN.bash can be a very simple but powerful tool to manage and measure productivity, and can be 
-used across teams using just one CSV stored in a network/server/repo.
+> WHY: bitbucket/github/issuetrackers are great for teams, but how to manage todo's on a crossrepo- or microlevel? KANBAN.bash is a very simple **powerful** tool to manage and measure productivity. Just store the 
+CSV-file(s) on a repo, clouddrive or server and use it across teams.
 
 ## Install
 
