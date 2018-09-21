@@ -59,8 +59,8 @@ Y=$(tput lines)   #
   which nano   &>/dev/null && EDITOR=nano
   which pico   &>/dev/null && EDITOR=pico
   which vi     &>/dev/null && EDITOR=vi
-  which vim    &>/dev/null && EDITOR=emacs
-  which emacs  &>/dev/null && EDITOR=vim
+  which vim    &>/dev/null && EDITOR=vim
+  which emacs  &>/dev/null && EDITOR=emacs
 }
 [[ ! -n "${KANBANCONF}" ]] && KANBANCONF=~/".kanban.conf"
 if [[ ! -n "${KANBANFILE}" ]]; then 
@@ -226,7 +226,8 @@ update_item_status(){
     newitem="${newitem/$status/$2}"
     newitem="${newitem/$flags/$newflags}"
     newitem="${newitem/$dates/$newdates}"
-    sed -i "s|$item|$newitem|g" "${KANBANFILE}" 
+    KANBANITEMS="$(<$KANBANFILE)"
+    echo "${KANBANITEMS//"$item"/"$newitem"}" > "${KANBANFILE}"
     echo "$status -> $2"
   fi
 }
@@ -240,7 +241,9 @@ update_item(){
 #
 '"$item" > "${TMP}".update
   ${EDITOR} "${TMP}".update
-  sed -i "s|$item|$(cat "${TMP}".update | tail -n1)|g" "${KANBANFILE}" 
+  KANBANITEMS="$(<$KANBANFILE)"
+  newitem="$(cat "${TMP}".update | tail -n1 )" 
+  echo "${KANBANITEMS//"$item"/"$newitem"}" > "${KANBANFILE}"
   echo "updated item $1"
 }
 
