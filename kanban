@@ -179,11 +179,11 @@ columnize(){
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
     echo -e "|_$status\n|+$(strtoline "$status" "~")~\n" > "${TMP}".col.$i
-    cat "${TMP}".index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 | sed 's/^/| /g'  | unexpand >> "${TMP}".col.$i
+    cat "${TMP}".index | grep "$status" | printcsv 5 | sed 's/["]\?'$status'["]\?//g' | sed 's/^/| /g'  | unexpand >> "${TMP}".col.$i
     #echo "$( cat "${TMP}".col.$i )" > "${TMP}".col.$i
     i=$((i+1))
   done 
-  pr -m -t -w$X -S"      "  "${TMP}".col.* | lines 
+  pr -m -t -w$X "${TMP}".col.* | lines 
   rm "${TMP}".col.* # print and cleanup
 }
 
