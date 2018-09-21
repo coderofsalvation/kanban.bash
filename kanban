@@ -55,6 +55,13 @@ locale | grep -q "UTF-8" && UTF8=1
 X=$(tput cols)    # get size of terminal window
 Y=$(tput lines)   # 
 #SMALLSCREEN=('HOLD' 'DOING' 'CODE')  # uncomment to get simplified kanban board
+[[ ! -n $EDITOR ]] && {
+  which nano   &>/dev/null && EDITOR=nano
+  which pico   &>/dev/null && EDITOR=pico
+  which vi     &>/dev/null && EDITOR=vi
+  which vim    &>/dev/null && EDITOR=emacs
+  which emacs  &>/dev/null && EDITOR=vim
+}
 [[ ! -n "${KANBANCONF}" ]] && KANBANCONF=~/".kanban.conf"
 if [[ ! -n "${KANBANFILE}" ]]; then 
   [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
