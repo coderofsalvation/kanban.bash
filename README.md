@@ -30,9 +30,9 @@ used across teams using just one CSV stored in a network/server/repo.
 
 ## Edit item 
 
-    $ ./kanban 34
-
 > NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
+
+    $ ./kanban 34
 
 ## Todo grep 
 
