@@ -67,7 +67,7 @@ if [[ ! -n "${KANBANFILE}" ]]; then
   [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
   [[ ! -n "${KANBANFILE}" ]] && KANBANFILE=~/".kanban.csv";
 fi
-[[ ! -f "${KANBANFILE}" ]] && echo "status,tag,description,history,date" > "${KANBANFILE}"
+[[ ! -f "${KANBANFILE}" ]] && echo '"status","tag","description","history","date"' > "${KANBANFILE}"
 
 config_example="# kanban config file
 
@@ -156,7 +156,7 @@ list(){
   tags="$*"
   greppattern="(${tags// /\|})"
   create_index
-  cat "${TMP}".index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols)
+  cat "${TMP}".index | grep -E "$greppattern" | sort -k2 -t, | head -n-1 | HEADER='"id","status","tag","description","history","start","touched"\n"-","-","-","-","-"'"\n" printcsv 6 | cut -c 1-$(tput cols)
   rm "${TMP}".*
 }
 
@@ -251,7 +251,7 @@ printcsv(){
   csv="$HEADER$(cat -)"
   [[ ! -n $1 ]] && max=999999 || max=$1
   [[ ! -n $2 ]] && min=1 || min=$1
-  echo -e "$csv" | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"|,'            \
+  echo -e "$csv" | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"'            \
     '{out=""; for(i='$min';i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
     max=$max | sed 's/""/"/g' | column -t -s $'\t'                   
 }
