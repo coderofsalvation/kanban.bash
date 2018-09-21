@@ -75,7 +75,7 @@ config_example="# kanban config file
 statuses=('BACKLOG' 'HOLD' 'DOING' 'CODE' 'DONE') 
 
 # maximum amount of todos within status (triggers warning when exceeds)
-declare -A maximum_todo
+declare -a maximum_todo
 maximum_todo['HOLD']=5
 maximum_todo['DOING']=4
 maximum_todo['CODE']=3
