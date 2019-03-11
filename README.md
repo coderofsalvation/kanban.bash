@@ -150,11 +150,11 @@ No widescreen? Show a simplified kanban board by hiding some categories in the `
 
     $ watch kanban show
 
-> Run ninja-commands like: 'k 23 DONE' and withness the update:
+> Run ninja-commands like: 'k 23 DONE' and witness the update:
 
     $ k 34 DONE 
     TODO -> DONE
-    $ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"
+    $ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline""
 
 ## Statistics
 
