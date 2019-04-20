@@ -70,6 +70,8 @@ fi
 [[ ! -f "${KANBANFILE}" ]] && echo '"status","tag","description","history","date"' > "${KANBANFILE}"
 
 # kanban config file
+# Please note that the escaped quotes
+# will NOT be escaped in the actual file. This is intentional.
 config_example="
 # kanban config file
 
