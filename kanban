@@ -69,16 +69,17 @@ if [[ ! -n "${KANBANFILE}" ]]; then
 fi
 [[ ! -f "${KANBANFILE}" ]] && echo '"status","tag","description","history","date"' > "${KANBANFILE}"
 
-config_example="# kanban config file
-
 # kanban config file
+config_example="
+# kanban config file
+
 statuses=('BACKLOG' 'HOLD' 'DOING' 'CODE' 'DONE') 
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -a maximum_todo
-maximum_todo['HOLD']=5
-maximum_todo['DOING']=4
-maximum_todo['CODE']=3
+maximum_todo[\"HOLD\"]=5
+maximum_todo[\"DOING\"]=4
+maximum_todo[\"CODE\"]=3
 "
 
 # usage: fb put <x> <y> <string>
