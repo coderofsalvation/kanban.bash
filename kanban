@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # commandline asciii kanban board for minimalist productivity bash hackers (csv-based)
 #
