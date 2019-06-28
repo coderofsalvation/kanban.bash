@@ -10,7 +10,7 @@ CSV-file(s) on a repo, clouddrive or server and use it across teams.
 
 ## Install
 
-    $ wget "https://raw.githubusercontent.com/coderofsalvation/kanban.bash/master/kanban"
+    $ curl -LO "https://raw.githubusercontent.com/coderofsalvation/kanban.bash/master/kanban"
     $ chmod 755 kanban
   
 ## Show me the kanban board!
