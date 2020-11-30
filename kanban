@@ -3,7 +3,8 @@
 # commandline asciii kanban board for minimalist productivity bash hackers (csv-based)
 #
 # Usage:
-# 
+#                                     
+#   kanban create                           # optional: create kanban in current directory
 #   kanban add                              # add item interactive (adviced) 
 #   kanban show [status] ....               # show ascii kanban board [with status]
 #   kanban <id>                             # edit or update item 
@@ -14,8 +15,8 @@
 #   kanban add <status> <tag> <description> # add item (use quoted strings for args)  
 #   kanban stats <status|tag> [<str>]       # generates stats 
 # 
-#   NOTE #1: statuses can be managed in ~/.kanban.conf
-#   NOTE #2: the database csv can be found in ~/.kanban.csv
+#   NOTE #1: global statuses can be managed in ~/.kanban.conf
+#   NOTE #2: global database csv can be found in ~/.kanban.csv
 # 
 # Examples:
 # 
@@ -24,15 +25,17 @@
 #   kanban stats status projectX
 #   kanban stats tag projectX 
 # 
-# Environment:
+# Environment or Config variables:
 # 
-#   You can switch context (e.g. work vs home vs project x ) like so:
+#   Easily switch or link context (e.g. work vs home vs project x ) like so:
 # 
-#   KANBANFILE=~/.kanban.foo.csv kanban show
-#   KANBANFILE=~/.kanban.foo.csv KANBANCONF=~/.kanban.foo.conf kanban show
-# 
+#   KANBANFILE=~/.kanban.foo.csv    # database
+#   KANBANCONF=~/.kanban.foo.conf   # config vars
+#   X=120                           # optional: hard-limit width (override autodetect)
+#   Y=20                            # optional: hard-limit height (override autodetect)
+#
 #   KANBANFILE env-var is not needed when a .kanban.csv file is present in the current working dir
-#   KANBANCONF is created automatically if not found
+#   KANBANCONF is created globally in homedir if not found
 # 
 # Copyright (C) 2015, Leon van Kammen / Coder of Salvation 
 #  
@@ -51,10 +54,9 @@
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
 BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
 TMP=~/.kanban.tmp
-locale | grep -q "UTF-8" && UTF8=1
-X=$(tput cols)    # get size of terminal window
-Y=$(tput lines)   # 
-#SMALLSCREEN=('HOLD' 'DOING' 'CODE')  # uncomment to get simplified kanban board
+which locale &>/dev/null && locale | grep -q "UTF-8" && UTF8=1
+[[ ! -n X ]] && X=$(tput cols)    # get size of terminal window
+[[ ! -n Y ]] && Y=$(tput lines)   # 
 [[ ! -n $EDITOR ]] && {
   which nano   &>/dev/null && EDITOR=nano
   which pico   &>/dev/null && EDITOR=pico
@@ -62,6 +64,8 @@ Y=$(tput lines)   #
   which vim    &>/dev/null && EDITOR=vim
   which emacs  &>/dev/null && EDITOR=emacs
 }
+
+[[ -f ./.kanban.conf    ]] && KANBANCONF="./.kanban.conf"  
 [[ ! -n "${KANBANCONF}" ]] && KANBANCONF=~/".kanban.conf"
 if [[ ! -n "${KANBANFILE}" ]]; then 
   [[ -f ".kanban.csv" ]] && KANBANFILE="$(pwd)/.kanban.csv"
@@ -74,8 +78,9 @@ fi
 # will NOT be escaped in the actual file. This is intentional.
 config_example="
 # kanban config file
-
 statuses=('BACKLOG' 'HOLD' 'DOING' 'CODE' 'DONE') 
+
+#SMALLSCREEN=('BACKLOG' 'DOING' 'CODE')  # uncomment to get simplified kanban board
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -a maximum_todo
@@ -153,6 +158,12 @@ stats(){
 
 init(){                          
   trap "tput cnorm -- normal" 0 1 5    # reset terminal colors to normal
+}
+
+create(){
+	KANBANFILE="$(pwd)/.kanban.csv" 
+	KANBANCONF="$(pwd)/.kanban.conf" 
+	createconfig	
 }
 
 list(){
@@ -256,7 +267,7 @@ printcsv(){
   [[ ! -n $2 ]] && min=1 || min=$1
   echo -e "$csv" | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"'            \
     '{out=""; for(i='$min';i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
-    max=$max | sed 's/""/"/g' | column -t -s $'\t'                   
+max=$max | sed 's/""/"/g' | column -t -s $'\t'                   
 }
 
 # source config
