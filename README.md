@@ -11,13 +11,15 @@ CSV-file(s) on a repo, clouddrive or server and use it across teams.
 
 ```bash
 $ curl -LO "https://raw.githubusercontent.com/coderofsalvation/kanban.bash/master/kanban"
-$ chmod 755 kanban```
+$ chmod 755 kanban
+```
   
 ## Show me the kanban board!
 
 ```bash
 $ ./kanban add TODO PERSONAL "buy rose for girlfriend foo bar"
-$ ./kanban show```
+$ ./kanban show
+```
 
 <img alt="" src=".res/board.gif"/>
 
@@ -28,19 +30,22 @@ $ ./kanban show```
 ```bash
 $ ./kanban show
 $ ./kanban 34 DONE
-IN_PROGRESS -> DONE```
+IN_PROGRESS -> DONE
+```
 
 ## Edit item 
 
 > NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
 
 ```bash
-$ ./kanban 34```
+$ ./kanban 34
+```
 
 ## Todo grep 
 
 ```bash
-$ ./kanban TODO DOING | grep projectfoo ```
+$ ./kanban TODO DOING | grep projectfoo 
+```
 
 Nice to get project-specific kanban overviews.
 
@@ -55,7 +60,8 @@ $ kanban list
   id  status   tag        description
   -   -        -          -                                                                                                                                                                -
   4   TODO     note       my_idea.txt
-$ k 4```
+$ k 4
+```
 
 > TIP: use symlinks to share notes across boards (`cd myproject && ln -s ~/.kanban/timelog.txt timelog.txt` e.g.)
 
@@ -71,7 +77,8 @@ id   status  tag   description                 history
 199  TODO    bly   meeting about techdesign    BT
 245  TODO    lb    checkout testsuite          BT
 246  TODO    nus   add field to db             BT
-242  TODO    nus   fix db lag                  BT ```
+242  TODO    nus   fix db lag                  BT 
+```
 
 as you can see in the history, todo 185 is quite problematic.
 It went from Backlog->Todo->Backlog->Doing->Hold->... and so on.
@@ -82,7 +89,8 @@ $ k TODO 2015-08
 id   status  tag   description                 history
 -    -       -     -                           -
 246  TODO    nus   add field to db             BT
-242  TODO    nus   fix db lag                  BT```
+242  TODO    nus   fix db lag                  BT
+```
 
 Here you can see all todo's which were 'touched' in august 2015
 
@@ -93,39 +101,41 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
 
 ## Commandline Overview 
 
-    $ ./kanban
-    Usage:
+```bash
+$ ./kanban
+Usage:
 
-      kanban add                              # add item interactive (adviced) 
-      kanban show [status] ....               # show ascii kanban board [with status]
-      kanban <id>                             # edit or update item 
-      kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
-      kanban <status> .....                   # list only todo items with this status(es)
-      kanban list                             # list all todos (heavy)
-      kanban tags                             # list all submitted tags
-      kanban add <status> <tag> <description> # add item (use quoted strings for args)  
-      kanban stats status [tag]
-      kanban stats tag 
-      kanban stats history 
+  kanban add                              # add item interactive (adviced) 
+  kanban show [status] ....               # show ascii kanban board [with status]
+  kanban <id>                             # edit or update item 
+  kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
+  kanban <status> .....                   # list only todo items with this status(es)
+  kanban list                             # list all todos (heavy)
+  kanban tags                             # list all submitted tags
+  kanban add <status> <tag> <description> # add item (use quoted strings for args)  
+  kanban stats status [tag]
+  kanban stats tag 
+  kanban stats history 
 
-      NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
-      NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
+  NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
+  NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
 
-    Examples:
+Examples:
 
-      kanban add TODO projectX "do foo"
-      kanban TODO DOING HOLD                 
-      kanban stats status projectX
-      kanban stats tag projectX 
-      watch NOCOLOR=1 kanban show
-      # notekeeping by entering a filename as description:
-      echo hello > note.txt && kanban add DOING note.txt
+  kanban add TODO projectX "do foo"
+  kanban TODO DOING HOLD                 
+  kanban stats status projectX
+  kanban stats tag projectX 
+  watch NOCOLOR=1 kanban show
+  # notekeeping by entering a filename as description:
+  echo hello > note.txt && kanban add DOING note.txt
 
-    Environment:
+Environment:
 
-      X=120 kanban ....         # set max line-width to 120
-      NOCOLOR=1 kanban ....     # disable colors
-      PLAIN=1 kanban ...        # plaintext, disable utf8 chars
+  X=120 kanban ....         # set max line-width to 120
+  NOCOLOR=1 kanban ....     # disable colors
+  PLAIN=1 kanban ...        # plaintext, disable utf8 chars
+```
 
 ## Interactive insertion *adviced*
 
@@ -138,7 +148,8 @@ enter description:
 enter one of statuses: BACKLOG TODO IN_PROGRESS HOLD DONE
 > TODO
 enter one of tags: projectA, projectB 
->```
+>
+```
 
 ## Customized kanban.
 
@@ -157,7 +168,8 @@ No widescreen? Show a simplified kanban board by hiding some categories in the `
 $ cp kanban ~/bin 
 $ echo 'export PATH=$PATH:~/bin' >> ~/.bashrc
 $ echo 'alias k=kanban'          >> ~/.bashrc
-$ source ~/.bashrc```
+$ source ~/.bashrc
+```
 
 (now all terminals will recognize 'k' as a command)
 
@@ -167,24 +179,28 @@ $ source ~/.bashrc```
 $ for i in {19,36,49}; do kanban $i BACKLOG; done
 DONE -> BACKLOG
 DONE -> BACKLOG
-DONE -> BACKLOG```
+DONE -> BACKLOG
+```
 
 > mass-renames:
 
 ```bash
-$ sed -i 's/FOO/BAR/g' ~/.kanban.csv```
+$ sed -i 's/FOO/BAR/g' ~/.kanban.csv
+```
     
 > Open a terminal on an extra monitor/screen/tmux:
 
 ```bash
-$ watch kanban show```
+$ watch kanban show
+```
 
 > Run ninja-commands like: 'k 23 DONE' and withness the update:
 
 ```bash
 $ k 34 DONE 
 TODO -> DONE
-$ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"```
+$ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"
+```
 
 ## Statistics
 
@@ -220,14 +236,17 @@ $ k stats status projectfoo
          BACKLOG    33 ▆▆▆▆▆ 
             HOLD     6 ▆ 
             TODO     2 ▆ 
-           DOING     1 ▆ ```
+           DOING     1 ▆ 
+```
 
 Lets see what the slacking / project ratio is :)
 
-    $ k stats tag 2015-08
+```bash
+$ k stats tag 2015-08
 
-             slacking   76 ▆▆▆▆▆▆▆▆ 
-             projecfoo  36 ▆▆▆▆ 
+         slacking   76 ▆▆▆▆▆▆▆▆ 
+         projecfoo  36 ▆▆▆▆ 
+```
 
 What are are typical tasktransitions:
 
