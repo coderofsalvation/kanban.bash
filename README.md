@@ -4,8 +4,8 @@
 
 commandline #notetaking #todomanager for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
 
-> WHY: bitbucket/github/issuetrackers are great for teams, but how to manage todo's on a crossrepo- or microlevel? KANBAN.bash is a very simple **powerful** tool to manage and measure productivity. Just store the 
-CSV-file(s) on a repo, clouddrive or server and use it across teams.
+> WHY: online issuetrackers are great for teams, but how to manage (personal) todo's on a crossrepo- or microlevel? KANBAN.bash is a very simple **powerful** tool to manage and measure productivity. Just store the 
+CSV-file(s) on a repo, clouddrive or server and use it across teams. #symlinksftw!
 
 ## Install
 
