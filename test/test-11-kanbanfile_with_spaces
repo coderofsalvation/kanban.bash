@@ -1,4 +1,0 @@
-export KANBANFILE="kanbanfile with spaces.csv"
-../kanban
-[[ -f "${KANBANFILE}" ]]
-

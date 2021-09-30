@@ -1,2 +1,2 @@
 install: true
-script: /bin/bash -c 'cd test; for test in test-*; do ./$test &>/dev/null; done && echo OK || echo ERROR'
+script: /bin/bash -c 'export PLAIN=1; export NOCOLOR=1; cd test; for test in test-*; do ./$test &>/dev/null; done && echo OK || echo ERROR'
