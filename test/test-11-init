@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# check homedirectory
+
+export HOME=/tmp
+[[ -d ~/.kanban ]] && rm -rf ~/.kanban
+../kanban
+[[ ! -d ~/.kanban ]] && exit 1
+[[ ! -f ~/.kanban/.kanban.csv ]] && exit 1
+[[ ! -f ~/.kanban/.kanban.conf ]] && exit 1
+
+# check local directory
+
+[[ -d foo ]] && rm -rf foo 
+mkdir foo 
+cd foo
+../../kanban init 
+[[ ! -d .kanban ]] && exit 1
+[[ ! -f .kanban/.kanban.csv ]] && exit 1
+[[ ! -f .kanban/.kanban.conf ]] && exit 1
+
+exit 0

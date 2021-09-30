@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# check homedirectory
+
+export HOME=/tmp
+[[ -d ~/.kanban ]] && rm -rf ~/.kanban
+rm ~/.kanban.* &>/dev/null
+../kanban
+mv ~/.kanban/.kanban{.csv,.conf} /tmp/.
+ls -la ~/.kanban.*
+../kanban
+ls -la ~/.kanban
+ls -la ~/.kanban.* &>/dev/null || exit 0 # perfect..they are deleted
