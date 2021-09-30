@@ -23,9 +23,11 @@ CSV-file(s) on a repo, clouddrive or server and use it across teams.
 
 ## Change status 
 
-    $ ./kanban show
-    $ ./kanban 34 DONE
-    IN_PROGRESS -> DONE
+```bash
+$ ./kanban show
+$ ./kanban 34 DONE
+IN_PROGRESS -> DONE
+```
 
 ## Edit item 
 
@@ -80,7 +82,7 @@ Here you can see all todo's which were 'touched' in august 2015
 
 ## Configuration 
 
-see ~/.kanban/kanban.conf (gets created automatically).
+see `~/.kanban/.kanban.conf` (gets created automatically).
 You can define the kanban statuses, and limit the maximum amount of todos per status.
 
 ## Commandline Overview 
