@@ -4,7 +4,7 @@
 
 export HOME=/tmp
 [[ -d ~/.kanban ]] && rm -rf ~/.kanban
-../kanban init 
+../kanban
 [[ ! -d ~/.kanban ]] && exit 1
 [[ ! -f ~/.kanban/.kanban.csv ]] && exit 1
 [[ ! -f ~/.kanban/.kanban.conf ]] && exit 1

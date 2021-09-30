@@ -4,6 +4,7 @@
 #
 # Usage:
 # 
+#   kanban init                             # initialize kanban in current directory
 #   kanban add                              # add item interactive (adviced) 
 #   kanban show [status] ....               # show ascii kanban board [with status]
 #   kanban <id>                             # edit or update item 
@@ -87,9 +88,9 @@ moveconfig(){
 
 
 config_example="# kanban config file
+statuses=('TODO' 'HOLD' 'DOING' 'DONE' 'NOTES' 'BACKLOG') 
 
-# kanban config file
-statuses=('BACKLOG' 'HOLD' 'DOING' 'CODE' 'DONE') 
+SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # uncomment to get simplified kanban board
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -A maximum_todo
@@ -114,14 +115,20 @@ draw_topline(){
 }
 
 createconfig(){
-  [[ -f ~/.kanban/kanban.conf ]] && { 
-    read -p "overwrite current config? (y/n)" overwrite; 
-    [[ ! "$overwrite" == "y" ]] && echo "aborted" && exit 1;
+  dir="$1"
+  [[ ! -n $1 ]] && {
+    dir=~
+    [[ -f ~/$FILE_CONF ]] && { 
+      read -p "overwrite current config? (y/n)" overwrite; 
+      [[ ! "$overwrite" == "y" ]] && echo "aborted" && exit 1;
+    }
   }
-  [[ ! -d ~/.kanban ]] && mkdir ~/.kanban
-  echo "$config_example" > ~/$FILE_CONF 
-  touch ~/$FILE_CSV
+  [[ ! -d $dir/.kanban ]] && mkdir $dir/.kanban
+  echo "$config_example" > $dir/$FILE_CONF 
+  touch $dir/$FILE_CSV 
 }
+
+init(){ createconfig $(pwd); }
 
 tags(){
   cat $KANBANFILE | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+2 | sort | uniq | tr '\n' ' '
@@ -167,7 +174,7 @@ stats(){
   } | grep -v 'tag\|status\|history\|-[ ]\+1' | grep -v '^[ ]\+1' # remove header rows
 }
 
-init(){                          
+_init(){                          
   trap "[[ ! -n \$NOCOLOR ]] && tput cnorm -- normal; " 0 1 5    # reset terminal colors to normal
   (( $X > 150 )) && unset SMALLSCREEN
   [[ -n $NOCOLOR ]] && { COL1="";COL2="";COL3=""; }
@@ -299,7 +306,7 @@ fi
 
 
 # execute main
-init
+_init
 
 if [[ -n "$1" ]]; then 
 
@@ -313,4 +320,4 @@ if [[ -n "$1" ]]; then
     *)       "$@" 
              ;;
   esac
-else grep -A30 "^# Usage:" "$0" | sed 's/^# //g'; fi
+else grep -A31 "^# Usage:" "$0" | sed 's/^# //g'; fi
