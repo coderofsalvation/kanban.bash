@@ -54,6 +54,8 @@
 #  
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+deps="tput column pr gawk"
+for dep in $deps; do which $dep &>/dev/null || { echo "$dep-cmd not installed..aborting (maybe install coreutils util-linux pkgs?)"; exit 1; }; done
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
 BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
 COL1="\033[0m"
@@ -118,6 +120,7 @@ createconfig(){
   }
   [[ ! -d ~/.kanban ]] && mkdir ~/.kanban
   echo "$config_example" > ~/$FILE_CONF 
+  touch ~/$FILE_CSV
 }
 
 tags(){
