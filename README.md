@@ -3,7 +3,7 @@
      |__|\__\/__/\__\|_|\__||_()_)/__/\__\|_|\__|__|_()_)/__/\__\.__)__)|_| |_|
 
 <img alt="" src="https://api.travis-ci.org/coderofsalvation/kanban.bash.svg"/>
-commandline todomanager for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
+commandline #notetaking #todomanager for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
 
 > WHY: bitbucket/github/issuetrackers are great for teams, but how to manage todo's on a crossrepo- or microlevel? KANBAN.bash is a very simple **powerful** tool to manage and measure productivity. Just store the 
 CSV-file(s) on a repo, clouddrive or server and use it across teams.
@@ -40,6 +40,20 @@ CSV-file(s) on a repo, clouddrive or server and use it across teams.
 
 Nice to get project-specific kanban overviews.
 
+## Note-taking
+
+> adding a filename as a description, will trigger kanban to open editor:
+
+    $ echo -e "hello\nworld" > my_idea.txt
+    $ kanban add TODO note my_idea.txt
+    $ kanban list
+      id  status   tag        description
+      -   -        -          -                                                                                                                                                                -
+      4   TODO     note       my_idea.txt
+    $ k 4
+
+> TIP: use symlinks to share notes across boards (`cd myproject && ln -s ~/.kanban/timelog.txt timelog.txt` e.g.)
+
 ## Simple listing of status 
 
 > NOTE: from here we use the k-alias, see the 'Attention Unix ninjas' on how to use it 
@@ -67,7 +81,7 @@ Here you can see all todo's which were 'touched' in august 2015
 
 ## Configuration 
 
-see ~/.kanban.conf (gets created automatically).
+see ~/.kanban/kanban.conf (gets created automatically).
 You can define the kanban statuses, and limit the maximum amount of todos per status.
 
 ## Commandline Overview 
@@ -75,18 +89,20 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
     $ ./kanban
     Usage:
 
-      kanban add                                # add item interactive (adviced) 
-      kanban show [status] ....                 # show ascii kanban board [with status]
-      kanban <id>                               # edit or update item 
-      kanban <id> <status>                      # update status of todo id (uses $EDITOR as preferred editor)
-      kanban <status> .....                     # list only todo items with this status(es)
-      kanban list                               # list all todos (heavy)
-      kanban tags                               # list all submitted tags
-      kanban add <status> <tag> <description>   # add item (use quoted strings for args)  
-      kanban stats <status|tag|history> [<str>] # generates stats 
+      kanban add                              # add item interactive (adviced) 
+      kanban show [status] ....               # show ascii kanban board [with status]
+      kanban <id>                             # edit or update item 
+      kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
+      kanban <status> .....                   # list only todo items with this status(es)
+      kanban list                             # list all todos (heavy)
+      kanban tags                             # list all submitted tags
+      kanban add <status> <tag> <description> # add item (use quoted strings for args)  
+      kanban stats status [tag]
+      kanban stats tag 
+      kanban stats history 
 
-      NOTE #1: statuses can be managed in ~/.kanban.conf
-      NOTE #2: the database csv can be found in ~/.kanban.csv
+      NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
+      NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
 
     Examples:
 
@@ -94,16 +110,15 @@ You can define the kanban statuses, and limit the maximum amount of todos per st
       kanban TODO DOING HOLD                 
       kanban stats status projectX
       kanban stats tag projectX 
+      watch NOCOLOR=1 kanban show
+      # notekeeping by entering a filename as description:
+      echo hello > note.txt && kanban add DOING note.txt
 
     Environment:
 
-      You can switch context (e.g. work vs home vs project x ) like so:
-
-      KANBANFILE=~/.kanban.foo.csv kanban show
-      KANBANFILE=~/.kanban.foo.csv KANBANCONF=~/.kanban.foo.conf kanban show
-    
-      KANBANFILE env-var is not needed when a .kanban.csv file is present in the current working dir
-      KANBANCONF is created automatically if not found
+      X=120 kanban ....         # set max line-width to 120
+      NOCOLOR=1 kanban ....     # disable colors
+      PLAIN=1 kanban ...        # plaintext, disable utf8 chars
 
 ## Interactive insertion *adviced*
 

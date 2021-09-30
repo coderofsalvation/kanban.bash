@@ -165,7 +165,7 @@ stats(){
 }
 
 init(){                          
-  trap "tput cnorm -- normal" 0 1 5    # reset terminal colors to normal
+  trap "[[ ! -n \$NOCOLOR ]] && tput cnorm -- normal; " 0 1 5    # reset terminal colors to normal
   (( $X > 150 )) && unset SMALLSCREEN
   [[ -n $NOCOLOR ]] && { COL1="";COL2="";COL3=""; }
 }
@@ -229,11 +229,11 @@ show(){
   if [[ -n $1 ]]; then 
     statuses=(); for status in $*; do statuses+=($status); done 
   fi
-  clear;  { 
+  { 
     echo "$1"
     if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
   } | columnize | more
-[[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL2} small terminal detected, hiding certain columns ${COL1})"
+  [[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL2} small terminal detected, hiding certain columns ${COL1})"
   echo ""
 }
 
@@ -311,4 +311,3 @@ if [[ -n "$1" ]]; then
              ;;
   esac
 else grep -A30 "^# Usage:" "$0" | sed 's/^# //g'; fi
-echo -e "${COL1}"
