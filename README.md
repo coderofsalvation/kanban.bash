@@ -129,6 +129,8 @@ Examples:
   watch NOCOLOR=1 kanban show
   # notekeeping by entering a filename as description:
   echo hello > note.txt && kanban add DOING note.txt
+  # store in github repo
+  git clone https://../foo.git && cd foo.git && kanban init && git add .kanban
 
 Environment:
 
