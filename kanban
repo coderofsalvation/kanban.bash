@@ -28,6 +28,8 @@
 #   kanban stats tag projectX 
 #   # notekeeping by entering a filename as description:
 #   echo hello > note.txt && kanban add DOING note.txt
+#   # store in github repo
+#   git clone https://../foo.git && cd foo.git && kanban init && git add .kanban
 # 
 # Environment:
 # 
@@ -320,4 +322,4 @@ if [[ -n "$1" ]]; then
     *)       "$@" 
              ;;
   esac
-else grep -A31 "^# Usage:" "$0" | sed 's/^# //g'; fi
+else grep -A33 "^# Usage:" "$0" | sed 's/^# //g'; fi
