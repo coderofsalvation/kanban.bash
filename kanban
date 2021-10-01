@@ -186,7 +186,8 @@ list(){
   tags="$*"
   greppattern="(${tags// /\|})"
   create_index
-  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols)
+  echo -e "$COL1"
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols) | awk 'NR > 1 { printf "'$COL2'"; } ; { print $0 }'
   rm $TMP.*
 }
 
@@ -207,7 +208,6 @@ columnize(){
   [[ -n $SMALLSCREEN ]] && awkformat='{ print $1" "$3" "$4" "$5 }'
   i=1; lines="$(cat)"; header="$( echo "$lines" | head -n0 )"; output="";
   rm $TMP.col.* &>/dev/null
-  echo -e "${COL1}$header${COL2}";
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
     echo -e ".$(strtoline "$status" "~")~~.\n| $status |_______\n|" > $TMP.col.$i
