@@ -25,6 +25,47 @@ $ ./kanban show
 
 > NOTE: columns are configurable, and board resizes according to terminal width
 
+## Usage 
+
+```bash
+$ ./kanban
+Usage:
+
+  kanban init                             # initialize kanban in current directory
+  kanban add                              # add item interactive (adviced) 
+  kanban show [status] ....               # show ascii kanban board [with status]
+  kanban <id>                             # edit or update item 
+  kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
+  kanban <status> .....                   # list only todo items with this status(es)
+  kanban list                             # list all todos (heavy)
+  kanban tags                             # list all submitted tags
+  kanban add <status> <tag> <description> # add item (use quoted strings for args)  
+  kanban stats status [tag]
+  kanban stats tag 
+  kanban stats history 
+
+  NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
+  NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
+
+Examples:
+
+  kanban add TODO projectX "do foo"
+  kanban TODO DOING HOLD                 
+  kanban stats status projectX
+  kanban stats tag projectX 
+  watch NOCOLOR=1 kanban show
+  # notekeeping by entering a filename as description:
+  echo hello > note.txt && kanban add DOING note.txt
+  # store in github repo
+  git clone https://../foo.git && cd foo.git && kanban init && git add .kanban
+
+Environment:
+
+  X=120 kanban ....         # set max line-width to 120
+  NOCOLOR=1 kanban ....     # disable colors
+  PLAIN=1 kanban ...        # plaintext, disable utf8 chars
+```
+
 ## Change status 
 
 ```bash
@@ -98,46 +139,6 @@ Here you can see all todo's which were 'touched' in august 2015
 
 see `~/.kanban/.kanban.conf` (gets created automatically).
 You can define the kanban statuses, and limit the maximum amount of todos per status.
-
-## Commandline Overview 
-
-```bash
-$ ./kanban
-Usage:
-
-  kanban add                              # add item interactive (adviced) 
-  kanban show [status] ....               # show ascii kanban board [with status]
-  kanban <id>                             # edit or update item 
-  kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
-  kanban <status> .....                   # list only todo items with this status(es)
-  kanban list                             # list all todos (heavy)
-  kanban tags                             # list all submitted tags
-  kanban add <status> <tag> <description> # add item (use quoted strings for args)  
-  kanban stats status [tag]
-  kanban stats tag 
-  kanban stats history 
-
-  NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
-  NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
-
-Examples:
-
-  kanban add TODO projectX "do foo"
-  kanban TODO DOING HOLD                 
-  kanban stats status projectX
-  kanban stats tag projectX 
-  watch NOCOLOR=1 kanban show
-  # notekeeping by entering a filename as description:
-  echo hello > note.txt && kanban add DOING note.txt
-  # store in github repo
-  git clone https://../foo.git && cd foo.git && kanban init && git add .kanban
-
-Environment:
-
-  X=120 kanban ....         # set max line-width to 120
-  NOCOLOR=1 kanban ....     # disable colors
-  PLAIN=1 kanban ...        # plaintext, disable utf8 chars
-```
 
 ## Interactive insertion *adviced*
 
