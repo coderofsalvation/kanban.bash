@@ -61,8 +61,8 @@ deps="tput column pr gawk"
 for dep in $deps; do which $dep &>/dev/null || { echo "$dep-cmd not installed..aborting (maybe install coreutils util-linux pkgs?)"; exit 1; }; done
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
 BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
-COL1="\033[0m"
-COL2="\033[90m"
+COL1="\033[37;1m"
+COL2="\033[0m"
 COL3="\033[88m"
 TMP=~/.kanban.tmp
 locale | grep -q "UTF-8" && UTF8=1
@@ -227,8 +227,12 @@ lines(){
     else 
       cat | sed 's/~/-/g;s/|+/|/g;'; 
     fi
-  } | awk '{ print $0 }; NR > 2 { printf "'$COL2'" }'
-  echo -e "$COL1"
+  } | awk '{
+    a = gensub(/#([a-zA-Z0-9_\.-]+) /,"'$COL1'&'$COL2'","g")
+    a = gensub(/[│|] ([a-zA-Z0-9_\.-]+) [│|]/,"'$COL1'&'$COL2'","g",a)
+    if( NR > 1 ){ printf "'$COL2'" }
+    print a
+  }'
 }
 
 align(){
