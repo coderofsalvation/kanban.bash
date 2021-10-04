@@ -165,7 +165,7 @@ No widescreen? Show a simplified kanban board by hiding some categories in the `
 
 ## Scriptable / Kanban Bot
 
-> kanban items are **SCRIPTABLE**, for example move items dynamically:
+> kanban items are **SCRIPTABLE**, therefore allowing dynamic statuses, tags & descriptions:
 
 ```bash
 $ k 24             # edit item 24
@@ -181,7 +181,13 @@ status_backup(){
 
 "$@"
 ```
-Profit! (`database backup` will have status **TODO** only on mondays) 
+Profit! Now `database backup` will have status **TODO** only on mondays.<br>
+
+> TIP: use curl to generate dynamic descriptions, for example:
+
+```bash 
+"$(curl https://api.github.com/repos/coderofsalvation/kanban.bash/issues | grep total_count | sed 's/[^0-9]//g') open issues"
+```
 
 ## Attention UNIX ninjas 
 
