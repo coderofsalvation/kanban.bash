@@ -71,16 +71,22 @@ Environment:
 
 ```bash
 $ ./kanban show
-$ ./kanban 34 DONE
-IN_PROGRESS -> DONE
+.------.              .------.              .-------.
+| TODO |_______       | HOLD |_______       | DOING |_______
+|                     |                     |
+| 1 foobar                                  | 3 ipsum
+| 2 lorem                                   
+
+$ ./kanban 2 DOING
+TODO -> DOING
 ```
 
 ## Edit item 
 
-> NOTE: make sure you have your favorite editor set in ~/.bashrc : 'export EDITOR=vim' etc
+> NOTE: make sure you have your favorite editor set in ~/.bashrc (`export EDITOR=vim` e.g.)
 
 ```bash
-$ ./kanban 34
+$ ./kanban 2        # this executes ${EDITOR} 
 ```
 
 ## Todo grep 

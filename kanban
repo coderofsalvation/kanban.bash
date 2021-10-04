@@ -200,7 +200,7 @@ list(){
   greppattern="(${tags// /\|})"
   create_index
   echo -e "$COL1"
-  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$X | awk 'NR > 1 { printf "'$COL0'"; } ; { print $0 }'
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$X | colorize 3
   rm $TMP.*
 }
 
@@ -236,10 +236,14 @@ lines(){
     cat | sed 's/| /│ /g;s/\.~/┌/g;s/~\./──┐/g;s///g;s/~/─/g;s/|\./└/g;s/|/│/g' # nice utf9 lines
   else 
     cat | sed 's/~/-/g;s/|+/|/g;'; 
-  fi | awk '{ 
+  fi | colorize 3
+}
+
+colorize(){
+  cat | awk '{ 
     a = gensub(/#([a-zA-Z0-9_\.-]+) /,"'$COL1'&'$COL0'","g")
     a = gensub(/\*([a-zA-Z0-9_\.-]+)\*/,"'$COL3'&'$COL0'","g",a)
-    if( NR == 3 ){ printf "'$COL0'"; }
+    if( NR == '$1' ){ printf "'$COL0'"; }
     print a
   }'
 }
