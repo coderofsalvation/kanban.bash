@@ -37,9 +37,9 @@
 #   X=120 kanban ....         # set max line-width to 120
 #   NOCOLOR=1 kanban ....     # disable colors
 #   PLAIN=1 kanban ...        # plaintext, disable utf8 chars
-#
+# 
 # Tips:
-#
+# 
 #   * <current_dir>/.kanban or ~/.kanban dir is checked for configuration / data
 #   * put .kanban directories in project-dirs
 #   * entering an existing text-filename as description enables note-keeping
@@ -347,4 +347,4 @@ if [[ -n "$1" ]]; then
     *)       "$@" 
              ;;
   esac
-else grep -A33 "^# Usage:" "$0" | sed 's/^# //g'; fi
+else grep -A40 "^# Usage:" "$0" | sed 's/^# //g' | more ; fi
