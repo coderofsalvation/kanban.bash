@@ -159,6 +159,13 @@ add(){
   echo "${csvline:0:$((${#csvline}-1))}" >> $KANBANFILE 
 }
 
+evaluate(){
+  IFS=''; cat - | sed 's/\\/\\\\\\\\/g' | while read -r line; do 
+    [[ "$line" =~ '$' ]] && line="$(eval "echo \"$( echo "$line" | sed 's/"/\\"/g')\"")"; 
+    echo "$line"
+  done
+}
+
 stats(){
   [[ ! -n $1 ]] && exit 1
   create_index
@@ -202,7 +209,7 @@ do_alert(){
 
 create_index(){
   rm $TMP.index &>/dev/null
-  cat -n $KANBANFILE | sed 's/^[ ]\+//g;s/\t/,/g' >> $TMP.index
+  cat -n $KANBANFILE | sed 's/^[ ]\+//g;s/\t/,/g' | evaluate >> $TMP.index
 }
 
 columnize(){

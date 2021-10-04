@@ -2,7 +2,7 @@
 <br>
 <img alt="" src=".res/carbon.png"/>
 
-commandline #notetaking #todomanager for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
+commandline #notetaking #todomanager #scriptable for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
 
 > WHY: online issuetrackers are great for teams, but how to manage (personal) todo's on a crossrepo- or microlevel? KANBAN.bash is a very simple **powerful** tool to manage and measure productivity. Just store the 
 CSV-file(s) on a repo, clouddrive or server and use it across teams. #symlinksftw!
@@ -162,6 +162,26 @@ No widescreen? Show a simplified kanban board by hiding some categories in the `
 ```bash
 #SMALLSCREEN=('HOLD' 'DOING')   # uncomment to only show these fields in kanban asciiboard
 ```
+
+## Scriptable / Kanban Bot
+
+> kanban items are **SCRIPTABLE**, for example move items dynamically:
+
+```bash
+$ k 24             # edit item 24
+"$(~/.kanban/bot status_backup)","script","database backup","T","2021-10-04@15:36"
+```
+now put this into `~/.kanban/bot` and run `chmod 755 ~/.kanban/bot`:
+
+```bash
+#!/bin/bash
+status_backup(){
+  [ $(date +%u) == 1 ] && printf TODO || printf BACKLOG
+}
+
+"$@"
+```
+Profit! (`database backup` will have status **TODO** only on mondays) 
 
 ## Attention UNIX ninjas 
 
