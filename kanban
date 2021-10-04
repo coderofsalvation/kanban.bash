@@ -189,7 +189,7 @@ list(){
   greppattern="(${tags// /\|})"
   create_index
   echo -e "$COL1"
-  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$(tput cols) | awk 'NR > 1 { printf "'$COL2'"; } ; { print $0 }'
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$X | awk 'NR > 1 { printf "'$COL2'"; } ; { print $0 }'
   rm $TMP.*
 }
 
@@ -206,33 +206,30 @@ create_index(){
 }
 
 columnize(){
-  awkformat='{ tag=substr($2,1,4); gsub($2,tag); printf("%-7s",$1); print " #"$2" "$3" "$4" "$5 }'
+  awkformat='{ tag=substr($2,1,4); gsub($2,tag); printf("%-5s",$1); print " #"$2" "$3" "$4" "$5 }'
   [[ -n $SMALLSCREEN ]] && awkformat='{ print $1" "$3" "$4" "$5 }'
   i=1; lines="$(cat)"; header="$( echo "$lines" | head -n0 )"; output="";
   rm $TMP.col.* &>/dev/null
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
     echo -e ".$(strtoline "$status" "~")~~.\n| $status |_______\n|" > $TMP.col.$i
-    cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g' | printcsv 5 | awk "$awkformat" |  sed 's/^/| /g;s/  / /g'  | unexpand >> $TMP.col.$i
-    #echo "$( cat $TMP.col.$i )" > $TMP.col.$i
+    cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g'       | \
+      printcsv 5   | awk "$awkformat" |  sed 's/^/| /g;s/  / /g'           | unexpand >> $TMP.col.$i
     i=$((i+1))
   done 
-  pr -m -t -w$((X-8)) -S"      "  $TMP.col.* | lines 
+  pr -m -t -w$((X-5)) -S"      "  $TMP.col.*  | lines 
   rm $TMP.col.* # print and cleanup
 }
 
 lines(){
   echo -e "$COL1"
-  {
-    if [[ -n $UTF8 ]]; then
-      cat | sed 's/| /│ /g;s/\.~/┌/g;s/~\./──┐/g;s///g;s/~/─/g;s/|\./└/g;s/|/│/g' # nice utf9 lines
-    else 
-      cat | sed 's/~/-/g;s/|+/|/g;'; 
-    fi
-  } | awk '{
+  if [[ -n $UTF8 ]]; then
+    cat | sed 's/| /│ /g;s/\.~/┌/g;s/~\./──┐/g;s///g;s/~/─/g;s/|\./└/g;s/|/│/g' # nice utf9 lines
+  else 
+    cat | sed 's/~/-/g;s/|+/|/g;'; 
+  fi | awk '{ 
     a = gensub(/#([a-zA-Z0-9_\.-]+) /,"'$COL1'&'$COL2'","g")
-    a = gensub(/[│|] ([a-zA-Z0-9_\.-]+) [│|]/,"'$COL1'&'$COL2'","g",a)
-    if( NR > 1 ){ printf "'$COL2'" }
+    if( NR == 3 ){ printf "'$COL2'" }; 
     print a
   }'
 }
@@ -250,7 +247,7 @@ show(){
   { 
     echo "$1"
     if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
-  } | columnize | more
+  } | columnize
   [[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL2} small terminal detected, hiding certain columns ${COL1})"
   echo ""
 }
