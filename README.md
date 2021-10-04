@@ -318,7 +318,7 @@ Create the following `index.html`:
 And then serve it to the web:
 
 ```bash
-$ apt-get install websocketd
+$ sudo apt-get install websocketd
 $ X=120 NOCOLOR=1 PLAIN=1 websocketd -passenv 'X,NOCOLOR,PLAIN' -port 8080 -staticdir . ./kanban show
 Mon, 04 Oct 2021 18:23:08 +0200 | INFO   | server     |  | Serving using application   : ./kanban show
 Mon, 04 Oct 2021 18:23:08 +0200 | INFO   | server     |  | Serving static content from : .
