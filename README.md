@@ -165,22 +165,22 @@ No widescreen? Show a simplified kanban board by hiding some categories in the `
 
 ## Scriptable / Kanban Bot
 
-> kanban items are **SCRIPTABLE**, therefore allowing dynamic statuses, tags & descriptions in the CSV-file:
+> kanban items are **SCRIPTABLE** using your favorite language. This allows dynamic statuses, tags & descriptions in the CSV-file:
 
 ```bash
-"$(~/.kanban/bot status_backup)","script","database backup","T","2021-10-04@15:36"
+"$(~/.kanban/bot status_day TODO '1 4')","script","database backup","T","2021-10-04@15:36"
 ```
-this will call the following (executable)  script (`~/.kanban/bot`)
+this will call the following (executable)  shellscript (`~/.kanban/bot`)
 
 ```bash
 #!/bin/bash
-status_backup(){
-  [ $(date +%u) == 1 ] && printf TODO || printf BACKLOG
+status_day(){
+  [[ "$2" =~ $(date +%u) ]] && printf $1 || printf BACKLOG
 }
 
 "$@"
 ```
-Profit! The `database backup` item will have status **TODO** on mondays, otherwise **BACKLOG**<br>
+Profit! <br>The `database backup` item will have status **TODO** on mondays & fridays, otherwise **BACKLOG**<br>
 
 > TIP: use curl to generate dynamic descriptions, for example:
 
