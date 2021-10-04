@@ -4,8 +4,8 @@
 
 commandline #notetaking #todomanager #scriptable for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
 
-> WHY: online issuetrackers are great for teams, but how to manage (personal) todo's on a crossrepo- or microlevel? KANBAN.bash is a very simple **powerful** tool to manage and measure productivity. Just store the 
-CSV-file(s) on a repo, clouddrive or server and use it across teams. #symlinksftw!
+> **WHY?** online issuetrackers are great for teams, but how to manage (personal) todo's on a crossrepo-, macro-, or micro-level? This is a very simple **powerful** tool to manage and measure productivity. Just store the 
+CSV-file(s) on a repo, clouddrive or server and use it across teams. #symlinks #nestedkanbans
 
 ## Install
 
@@ -161,6 +161,29 @@ No widescreen? Show a simplified kanban board by hiding some categories in the `
 
 ```bash
 #SMALLSCREEN=('HOLD' 'DOING')   # uncomment to only show these fields in kanban asciiboard
+```
+
+## Nested kanbans
+
+```bash
+$ kanban init
+$ mkdir featureX           
+$ kanban add TODO featureX 
+$ cd featureX
+$ kanban init
+$ kanban add TODO foobar
+$ cd ..
+$ kanban show
+ .____.
+| TODO |_____
+|
+| 12 featureX
+
+$ kanban 12                         # shows kanban inside featureX 
+ .____.
+| TODO |_____
+|
+| 1  foobar 
 ```
 
 ## Scriptable / Kanban Bot

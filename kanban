@@ -247,6 +247,7 @@ align(){
 }
 
 show(){
+  [[ -n $1 ]] && { cd $1; echo "[kanban] showing nested kanban '$1'"; $0 show; exit 0; }
   [[ ! -f "$KANBANFILE" ]] && touch "$KANBANFILE" 
   create_index
   if [[ -n $1 ]]; then 
@@ -288,6 +289,7 @@ update_item(){
   status="$(echo "$item" | awk -F',' '{ print $1 }')"
   file="$(echo "$item" | awk -F',' '{ print $3 }')"
   file="${file//\"/}"
+  [[ -d $file/.kanban ]] && { show $file; return; }
   [[ -f $file ]] && ${EDITOR} "$file"
   echo '#
 # STATUSES ARE: '${statuses[*]}' 
