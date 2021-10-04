@@ -297,6 +297,36 @@ $ k stats history HDHD 2014
    project10     3 ▆▆▆▆▆▆▆▆▆▆ 
 ```
 
+## Realtime Web-based kanban boards 
+
+Create the following `index.html`:
+
+```html
+<!DOCTYPE html>
+<pre id="log"></pre>
+<script>
+  // helper function: log message to screen
+  function log(msg) { document.getElementById('log').textContent += msg + '\n'; }
+  // setup websocket with callbacks
+  var ws = new WebSocket('ws://localhost:8080/');
+  ws.onopen = function() { console.log('CONNECT'); };
+  ws.onclose = function() { console.log('DISCONNECT'); };
+  ws.onmessage = function(event) { log(event.data); };
+</script>
+```
+
+And then serve it to the web:
+
+```bash
+$ apt-get install websocketd
+$ X=120 NOCOLOR=1 PLAIN=1 websocketd -passenv 'X,NOCOLOR,PLAIN' -port 8080 -staticdir . ./kanban show
+Mon, 04 Oct 2021 18:23:08 +0200 | INFO   | server     |  | Serving using application   : ./kanban show
+Mon, 04 Oct 2021 18:23:08 +0200 | INFO   | server     |  | Serving static content from : .
+Mon, 04 Oct 2021 18:23:08 +0200 | INFO   | server     |  | Starting WebSocket server   : ws://localhost:8080/
+```
+
+> Now surf to http://localhost:8080 and PROFIT!
+
 ## Tab completion 
 
 Somehow source `kanban.completion` in your `~/.bashrc` or just copy it to `/etc/bash_completion.d`
