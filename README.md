@@ -219,7 +219,7 @@ $ sed -i 's/FOO/BAR/g' ~/.kanban.csv
 > Open a terminal on an extra monitor/screen/tmux:
 
 ```bash
-$ watch kanban show
+$ NOCOLOR=1 watch kanban show
 ```
 
 > Run ninja-commands like: 'k 23 DONE' and withness the update:
