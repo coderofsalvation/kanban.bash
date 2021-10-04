@@ -2,7 +2,7 @@
 <br>
 <img alt="" src=".res/carbon.png"/>
 
-commandline #notetaking #todomanager #scriptable for teams/personal: kanbanboard csv-viewer for minimalist productivity hackers.
+commandline kanban #notetaking #todomanager #scriptable for teams/personal: CSV kanban for minimalist productivity hackers.
 
 > **WHY?** online issuetrackers are great for teams, but how to manage (personal) todo's on a crossrepo-, macro-, or micro-level? This is a very simple **powerful** tool to manage and measure productivity. Just store the 
 CSV-file(s) on a repo, clouddrive or server and use it across teams. #symlinks #nestedkanbans
