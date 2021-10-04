@@ -43,6 +43,7 @@ Usage:
   kanban stats status [tag]
   kanban stats tag 
   kanban stats history 
+  kanban csv                              # edit raw csv
 
   NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
   NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
@@ -140,7 +141,7 @@ Here you can see all todo's which were 'touched' in august 2015
 see `~/.kanban/.kanban.conf` (gets created automatically).
 You can define the kanban statuses, and limit the maximum amount of todos per status.
 
-## Interactive insertion *adviced*
+## Idiotproof csv-editing 
 
 Safest way to keep the CSV sane:
 
@@ -151,16 +152,18 @@ enter description:
 enter one of statuses: BACKLOG TODO IN_PROGRESS HOLD DONE
 > TODO
 enter one of tags: projectA, projectB 
->
+> projectA
+$
 ```
 
-## Customized kanban.
+## Responsive kanban.
 
 As mentioned earlier, the status/categorynames can be changed in the config-file.
-No widescreen? Show a simplified kanban board by hiding some categories in the `kanban`-bashscript:
+No widescreen? Show a tag-less, simplified kanban board by hiding some categories in the `kanban`-bashscript:
 
 ```bash
-#SMALLSCREEN=('HOLD' 'DOING')   # uncomment to only show these fields in kanban asciiboard
+XSMALL=119                           # show small kanban for terminalwidth < 119 chars
+SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # define simplified kanban board statuses
 ```
 
 ## Nested kanbans
@@ -210,6 +213,10 @@ Profit! <br>The `database backup` item will have status **TODO** on mondays & fr
 ```bash 
 "$(curl https://api.github.com/repos/coderofsalvation/kanban.bash/issues | grep total_count | sed 's/[^0-9]//g') open issues"
 ```
+
+## Blinking text
+
+Just wrap a word with stars (`*iamblinking*` e.g.) in your csv to catch more attention.
 
 ## Attention UNIX ninjas 
 

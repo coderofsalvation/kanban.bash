@@ -16,6 +16,7 @@
 #   kanban stats status [tag]
 #   kanban stats tag 
 #   kanban stats history 
+#   kanban csv                              # edit raw csv
 # 
 #   NOTE #1: statuses can be managed in ~/.kanban/.kanban.conf
 #   NOTE #2: the database csv can be found in ~/.kanban/.kanban.csv
@@ -61,9 +62,10 @@ deps="tput column pr gawk"
 for dep in $deps; do which $dep &>/dev/null || { echo "$dep-cmd not installed..aborting (maybe install coreutils util-linux pkgs?)"; exit 1; }; done
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
 BAR=(▁ ▂ ▃ ▄ ▅ ▆ ▆ ▇ ▇ '█' '█')
+COL0="\033[0m"
 COL1="\033[37;1m"
-COL2="\033[0m"
-COL3="\033[88m"
+COL2="\033[91;1m"
+COL3="\033[91;5m"
 TMP=~/.kanban.tmp
 [[ ! -n $TERM ]] && TERM=vt100
 locale | grep -q "UTF-8" && UTF8=1
@@ -71,6 +73,7 @@ locale | grep -q "UTF-8" && UTF8=1
 [[ ! -n $X   ]] && X=$(tput cols)    # get size of terminal window
 [[ ! -n $Y   ]] && Y=$(tput lines)   # 
 SMALLSCREEN=('SCHEDULED' 'HOLD' 'DOING')  # uncomment to get simplified kanban board
+[[ ! -n $XSMALL ]] && XSMALL=119
 FILE_CONF=".kanban/.kanban.conf"
 FILE_CSV=".kanban/.kanban.csv"
 [[ ! -n $EDITOR ]] && {
@@ -93,13 +96,13 @@ moveconfig(){
 config_example="# kanban config file
 statuses=('TODO' 'HOLD' 'DOING' 'DONE' 'NOTES' 'BACKLOG') 
 
-SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # uncomment to get simplified kanban board
+XSMALL=119                           # show small kanban for terminalwidth < 119 chars
+SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # define simplified kanban board statuses
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -A maximum_todo
-maximum_todo['HOLD']=5
-maximum_todo['DOING']=4
-maximum_todo['CODE']=3
+maximum_todo[HOLD]=10
+maximum_todo[DOING]=5
 "
 
 # usage: fb put <x> <y> <string>
@@ -188,8 +191,8 @@ stats(){
 
 _init(){                          
   trap "[[ ! -n \$NOCOLOR ]] && tput cnorm -- normal; " 0 1 5    # reset terminal colors to normal
-  (( $X > 119 )) && unset SMALLSCREEN
-  [[ -n $NOCOLOR ]] && { COL1="";COL2="";COL3=""; }
+  (( $X > $XSMALL )) && unset SMALLSCREEN
+  [[ -n $NOCOLOR ]] && { COL1="";COL0="";COL2=""; COL3=""; }
 }
 
 list(){
@@ -197,15 +200,8 @@ list(){
   greppattern="(${tags// /\|})"
   create_index
   echo -e "$COL1"
-  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$X | awk 'NR > 1 { printf "'$COL2'"; } ; { print $0 }'
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$X | awk 'NR > 1 { printf "'$COL0'"; } ; { print $0 }'
   rm $TMP.*
-}
-
-do_alert(){
-  nlines=$(echo "$1" | wc -l ) ; maximum=$2 
-  if [[ ${#maximum} > 0 ]] && [[ $nlines > $maximum ]]; then 
-    echo -e "\n\n!!! alert: number of '$3' items (max $maximum) slows down average productionrate !!!" >> "$4"
-  fi
 }
 
 create_index(){
@@ -220,7 +216,12 @@ columnize(){
   rm $TMP.col.* &>/dev/null
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
-    echo -e ".$(strtoline "$status" "~")~~.\n| $status |_______\n|" > $TMP.col.$i
+    label=$status
+    nlines=$(cat $TMP.index | grep "$status" | wc -l) 
+    maxlines=0 
+    [[ -v "maximum_todo[$status]" ]] && maxlines=${maximum_todo[$status]}
+    [[ ${maximum_todo[$status]} > 0 ]] && [[ $nlines > ${maximum_todo[$status]} ]] && label="*$status*"
+    echo -e ".$(strtoline "$label" "~")~~.\n| $label |_______\n|" > $TMP.col.$i
     cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g'       | \
       printcsv 5   | awk "$awkformat" |  sed 's/^/| /g;s/  / /g'           | unexpand >> $TMP.col.$i
     i=$((i+1))
@@ -236,8 +237,9 @@ lines(){
   else 
     cat | sed 's/~/-/g;s/|+/|/g;'; 
   fi | awk '{ 
-    a = gensub(/#([a-zA-Z0-9_\.-]+) /,"'$COL1'&'$COL2'","g")
-    if( NR == 3 ){ printf "'$COL2'" }; 
+    a = gensub(/#([a-zA-Z0-9_\.-]+) /,"'$COL1'&'$COL0'","g")
+    a = gensub(/\*([a-zA-Z0-9_\.-]+)\*/,"'$COL3'&'$COL0'","g",a)
+    if( NR == 3 ){ printf "'$COL0'"; }
     print a
   }'
 }
@@ -257,7 +259,7 @@ show(){
     echo "$1"
     if [[ -n $1 ]]; then cat $TMP.index | grep "$1"; else cat $TMP.index; fi 
   } | columnize
-  [[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL2} small terminal detected, hiding certain columns ${COL1})"
+  [[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL0} small terminal detected, hiding certain columns ${COL1})"
   echo ""
 }
 
@@ -298,6 +300,7 @@ update_item(){
   ${EDITOR} $TMP.update
   sed -i "s|$item|$(cat $TMP.update | tail -n1)|g" $KANBANFILE 
   echo "updated item $1"
+  echo $item
 }
 
 printcsv(){
@@ -307,6 +310,10 @@ printcsv(){
   echo -e "$csv" | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"|,'            \
     '{out=""; for(i='$min';i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
     max=$max | sed 's/""/"/g' | column -t -s $'\t'                   
+}
+
+csv(){
+  ${EDITOR} $KANBANFILE
 }
 
 # source config
