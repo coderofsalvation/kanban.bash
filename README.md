@@ -266,6 +266,16 @@ TODO -> DONE
 $ k add TODO NINJW workout" "$(date --date='tomorrow' +'%Y-%m-%d') deadline"
 ```
 
+## Automatically display boards
+
+Put the following in `~/.bashrc` to display boards whenever you enter a directory with a kanban:
+
+```
+cd(){
+  builtin cd ${1:+"$@"} && [[ -d ./.kanban ]] && kanban show
+}
+```
+
 ## Statistics
 
 With the power of grep you can get overviews:

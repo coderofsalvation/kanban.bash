@@ -278,7 +278,7 @@ update_item_status(){
     dates="$(echo "$item"  | awk -F',' '{ print $5 }' | sed 's/"//g' )"
     newflags="$flags${2:0:1}"
     newdates="$dates $(get_current_date)"
-    [[ $status =~ "\$(" ]] && { update_item $1; return 0; }
+    #[[ "$status" =~ "\$(" ]] && { update_item $1; return 0; }
     [[ "$2" =~ "DONE"   ]] && date="$(get_current_date)"
     newitem="$item"
     newitem="${newitem/$status/$2}"
