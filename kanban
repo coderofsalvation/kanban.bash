@@ -206,7 +206,7 @@ list(){
 
 create_index(){
   rm $TMP.index &>/dev/null
-  cat -n $KANBANFILE | sed 's/^[ ]\+//g;s/\t/,/g' | evaluate >> $TMP.index
+  cat -n $KANBANFILE | sed 's/^[ ]\+//g;s/\t/,/g;s/"\/.*\//"/g' | evaluate >> $TMP.index
 }
 
 columnize(){
@@ -304,7 +304,6 @@ update_item(){
   ${EDITOR} $TMP.update
   sed -i "s|$item|$(cat $TMP.update | tail -n1)|g" $KANBANFILE 
   echo "updated item $1"
-  echo $item
 }
 
 printcsv(){
