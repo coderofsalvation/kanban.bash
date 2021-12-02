@@ -17,6 +17,7 @@ $ chmod 755 kanban
 ## Show me the kanban board!
 
 ```bash
+$ ./kanban init
 $ ./kanban add TODO PERSONAL "buy rose for girlfriend foo bar"
 $ ./kanban show
 ```
@@ -144,7 +145,7 @@ Here you can see all todo's which were 'touched' in august 2015
 
 ## Configuration 
 
-see `~/.kanban/.kanban.conf` (gets created automatically).
+see `~/.kanban/.kanban.conf` (gets created automatically by running `./kanban init`).
 You can define the kanban statuses, and limit the maximum amount of todos per status.
 
 ## Idiotproof csv-editing 
