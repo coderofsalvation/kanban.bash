@@ -195,6 +195,22 @@ $ kanban 12                         # shows kanban inside featureX
 | 1  foobar 
 ```
 
+> Or, how about centralized kanbans in your dotfiles repo + 1 in a projectrepo
+
+```
+$ cd ~                         # go to homedir (where your dotfiles live)
+$ kanban init                  # creates ~/.kanban
+$ cd projects/foo 
+$ kanban init                 
+$ mv .kanban ~/.kanban/foo    
+$ ln -s ~/.kanban/foo .kanban  # link dotfiles-folder to here
+$ cd ~
+$ git add .kanban && git commit -m "dotfiles: updated kanbans"
+$ cd projects/bar
+$ kanban init
+$ git add .kanban && git commit -m "added kanban to project repo"
+```
+
 ## Scriptable / Kanban Bot
 
 > kanban items are **SCRIPTABLE** using your favorite language. This allows dynamic statuses, tags & descriptions in the CSV-file:
