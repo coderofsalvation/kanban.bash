@@ -145,8 +145,9 @@ Here you can see all todo's which were 'touched' in august 2015
 
 ## Configuration 
 
-see `~/.kanban/.kanban.conf` (gets created automatically by running `./kanban init`).
-You can define the kanban statuses, and limit the maximum amount of todos per status.
+see `~/.kanban/.kanban.conf` (gets created automatically)
+You can define the kanban statuses, and limit the maximum amount of todos per status.<br>
+See `.kanban/kanban.conf` in case you initialized a board in your current dir (using `kanban init`)
 
 ## Idiotproof csv-editing 
 
