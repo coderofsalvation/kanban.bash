@@ -339,7 +339,11 @@ if [[ -n "$1" ]]; then
   [[ "${statuses[*]}" =~ "$1" ]] && { list "$@" ; exit 0; }
   case "$1" in 
 
-    [0-9]*)  [[ -n $2 ]] && [[ "${statuses[*]}" =~ "$2" ]] && update_item_status "$@" && exit 0
+    [0-9]*)  [[ -n $2 ]] && {
+                update_item_status "$@"
+                    [[ ! "${statuses[*]}" =~ "$2" ]] && echo -e "[!] burying in csv (visible statuses are: ${statuses[*]})"
+                exit 0
+             }
              update_item "$@"
              ;;
 
