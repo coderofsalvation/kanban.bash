@@ -66,7 +66,7 @@ COL0="\033[0m"
 COL1="\033[37;1m"
 COL2="\033[91;1m"
 COL3="\033[91;5m"
-TMP=~/.kanban.tmp
+TMP=$(mktemp -t kanban.XXXXXXXX)
 [[ ! -n $TERM ]] && TERM=vt100
 locale | grep -q "UTF-8" && UTF8=1
 [[ -n $PLAIN ]] && unset UTF8
