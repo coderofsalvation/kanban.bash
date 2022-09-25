@@ -190,7 +190,7 @@ stats(){
 }
 
 _init(){                          
-  trap "[[ ! -n \$NOCOLOR ]] && tput cnorm -- normal; " 0 1 5    # reset terminal colors to normal
+  trap "[[ -z \$NOCOLOR ]] && tput sgr0" 0 1 5    # reset terminal colors to normal
   (( $X > $XSMALL )) && unset SMALLSCREEN
   [[ -n $NOCOLOR ]] && { COL1="";COL0="";COL2=""; COL3=""; }
 }
