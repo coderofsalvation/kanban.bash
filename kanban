@@ -6,7 +6,7 @@
 # 
 #   kanban init                             # initialize kanban in current directory
 #   kanban add                              # add item interactive (adviced) 
-#   kanban show [status] ....               # show ascii kanban board [with status]
+#   kanban show [dir with .kanban]          # show global [or nested] ascii kanbanboard
 #   kanban <id>                             # edit or update item 
 #   kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
 #   kanban <status> .....                   # list only todo items with this status(es)
@@ -266,6 +266,15 @@ show(){
   } | columnize
   [[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL0} small terminal detected, hiding certain columns ${COL1})"
   echo ""
+  find . -type f -mindepth 3 -iname '*kanban.conf*' | awk '{
+    if( !START ){
+      print "kanbans: "
+      START=1
+    }
+    gsub("^\.\/","",$0)
+    gsub("\/.kanban.*","",$0)
+    print "   ├─ "$0 
+  }'
 }
 
 get_current_date(){ date "+%Y-%m-%d@%H:%M"; }
