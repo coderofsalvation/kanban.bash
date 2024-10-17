@@ -83,9 +83,9 @@ FILE_CSV=".kanban/.kanban.csv"
 
 # migration: move config files of old kanban versions to .kanban
 moveconfig(){ 
-  mkdir $1/.kanban
+  mkdir "$1/.kanban"
   echo "[!] old config files detected..moving to .kanban-folder"
-  mv $1/.kanban.* $1/.kanban/.
+  mv "$1/.kanban".* "$1/.kanban/."
   sleep 3s
   clear
 }
@@ -129,12 +129,13 @@ createconfig(){
       [[ ! "$overwrite" == "y" ]] && echo "aborted" && exit 1;
     }
   }
-  [[ ! -d $dir/.kanban ]] && mkdir $dir/.kanban
-  echo "$config_example" > $dir/$FILE_CONF 
-  touch $dir/$FILE_CSV 
+  set -x
+  [[ ! -d "$dir/.kanban" ]] && mkdir "$dir/.kanban"
+  echo "$config_example" > "$dir/$FILE_CONF"
+  touch "$dir/$FILE_CSV" 
 }
 
-init(){ createconfig $(pwd); }
+init(){ createconfig "$(pwd)"; }
 
 tags(){
   cat $KANBANFILE | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+2 | sort | uniq | tr '\n' ' '
