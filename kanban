@@ -76,9 +76,10 @@ SMALLSCREEN=('SCHEDULED' 'HOLD' 'DOING')  # uncomment to get simplified kanban b
 [[ ! -n $XSMALL ]] && XSMALL=119
 FILE_CONF=".kanban/.kanban.conf"
 FILE_CSV=".kanban/.kanban.csv"
-[[ ! -n $EDITOR ]] && {
+[[ ! -n "$EDITOR" ]] && {
   which nano   &>/dev/null && EDITOR=nano
   which pico   &>/dev/null && EDITOR=pico
+  printf "${COL2}warning:${COL0} EDITOR env-variable not set: add it ('export EDITOR=vim' e.g.) to ~/.profile e.g.)\n"
 }
 
 # migration: move config files of old kanban versions to .kanban
