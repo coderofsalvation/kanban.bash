@@ -129,7 +129,6 @@ createconfig(){
       [[ ! "$overwrite" == "y" ]] && echo "aborted" && exit 1;
     }
   }
-  set -x
   [[ ! -d "$dir/.kanban" ]] && mkdir "$dir/.kanban"
   echo "$config_example" > "$dir/$FILE_CONF"
   touch "$dir/$FILE_CSV" 
@@ -138,7 +137,8 @@ createconfig(){
 init(){ createconfig "$(pwd)"; }
 
 tags(){
-  cat $KANBANFILE | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+2 | sort | uniq | tr '\n' ' '
+  cat "$KANBANFILE" | awk -F',' '{ print $2 }' | sed 's/,.*//g;s/"//g' | tail -n+1 | sort | uniq | tr '\n' ' '
+  echo
 }
 
 get_statuses(){
@@ -161,7 +161,7 @@ add(){
   status="$1"
   csvline='"'$1'","'$2'"'; shift;shift;
   csvline="$csvline,\"$*\",\"${status:0:1}\",\"$(get_current_date)\"\""
-  echo "${csvline:0:$((${#csvline}-1))}" >> $KANBANFILE 
+  echo "${csvline:0:$((${#csvline}-1))}" >> "$KANBANFILE" 
 }
 
 evaluate(){
@@ -207,7 +207,7 @@ list(){
 
 create_index(){
   rm $TMP.index &>/dev/null
-  cat -n $KANBANFILE | sed 's/^[ ]\+//g;s/\t/,/g;s/"\/.*\//"/g' | evaluate >> $TMP.index
+  cat -n "$KANBANFILE" | sed 's/^[ ]\+//g;s/\t/,/g;s/"\/.*\//"/g' | evaluate >> $TMP.index
 }
 
 columnize(){
@@ -271,7 +271,7 @@ show(){
 get_current_date(){ date "+%Y-%m-%d@%H:%M"; }
 
 update_item_status(){
-  item="$( cat $KANBANFILE | awk "{ if (NR==$1) print \$0 }" )"
+  item="$( cat "$KANBANFILE" | awk "{ if (NR==$1) print \$0 }" )"
   [[ ${#item} == 0 ]] && echo "item $1 not found" && exit 1 
   if [[ -n "$2" ]]; then  # status change 
     status="$(echo "$item" | awk -F',' '{ print $1 }' | sed 's/"//g' )"
@@ -285,13 +285,13 @@ update_item_status(){
     newitem="${newitem/$status/$2}"
     newitem="${newitem/$flags/$newflags}"
     newitem="${newitem/$dates/$newdates}"
-    sed -i "s|$item|$newitem|g" $KANBANFILE 
+    sed -i "s|$item|$newitem|g" "$KANBANFILE" 
     echo "$status -> $2"
   fi
 }
 
 update_item(){
-  item="$( cat $KANBANFILE | awk "{ if (NR==$1) print \$0 }" )"
+  item="$( cat "$KANBANFILE" | awk "{ if (NR==$1) print \$0 }" )"
   [[ ${#item} == 0 ]] && echo "item $1 not found" && exit 1 
   status="$(echo "$item" | awk -F',' '{ print $1 }')"
   file="$(echo "$item" | awk -F',' '{ print $3 }')"
@@ -303,7 +303,7 @@ update_item(){
 #
 '"$item" > $TMP.update
   ${EDITOR} $TMP.update
-  sed -i "s|$item|$(cat $TMP.update | tail -n1)|g" $KANBANFILE 
+  sed -i "s|$item|$(cat $TMP.update | tail -n1)|g" "$KANBANFILE" 
   echo "updated item $1"
 }
 
@@ -325,11 +325,11 @@ csv(){
 [[   -f $FILE_CONF     ]] && source $FILE_CONF 
 [[ ! -f $FILE_CONF     ]] && source ~/$FILE_CONF 
 
-if [[ ! -n $KANBANFILE ]]; then 
+if [[ ! -n "$KANBANFILE" ]]; then 
   [[ -f "$FILE_CSV" ]] && KANBANFILE="$(pwd)/$FILE_CSV"
-  [[ ! -f $KANBANFILE ]] && KANBANFILE=~/"$FILE_CSV"
+  [[ ! -f "$KANBANFILE" ]] && KANBANFILE=~/"$FILE_CSV"
 fi
-[[ ! -f $KANBANFILE ]] && { echo "$KANBANFILE does not exist"; exit; }
+[[ ! -f "$KANBANFILE" ]] && { echo "$KANBANFILE does not exist"; exit; }
 
 
 # execute main
