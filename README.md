@@ -176,28 +176,57 @@ SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # define simplified kanban board statuses
 
 ## Nested kanbans
 
+Besides regular tickets, infinite nested kanbans are supported too, as well as adding a kanban as a ticket.
+
 ```bash
 $ kanban init
-$ mkdir featureX           
-$ kanban add TODO featureX 
-$ cd featureX
-$ kanban init
-$ kanban add TODO foobar
+$ mkdir v3           
+$ mkdir v3/v4           
+$ cd v3    && kanban init && kanban add a foo && cd -
+$ cd v3/v4 && kanban init && kanban add b bar && cd -
+$ kanban add TODO dev foobar
 $ cd ..
 $ kanban show
  .____.
 | TODO |_____
 |
-| 12 featureX
+| 1 #dev foobar
 
-$ kanban 12                         # shows kanban inside featureX 
+kanbans: 
+   ├─ v3 
+   ├─ v3/v4 
+
+
+$ kanban v3                         # shows v3 kanban 
  .____.
 | TODO |_____
 |
-| 1  foobar 
+| 1 #a foo 
 ```
 
-> Or, how about centralized kanbans in your dotfiles repo + 1 in a projectrepo
+Now lets add the `v3/v4` kanban as a ticket:
+
+```bash
+$ kanban add TODO foo v3/v4 
+$ kanban show
+ .____.
+| TODO |_____
+|
+| 1 #dev foobar
+| 2 #foo v3/v4 
+
+kanbans: 
+   ├─ v3 
+   ├─ v3/v4 
+
+$ kanban 2            # shows v3/v4 kanban
+ .____.
+| TODO |_____
+|
+| 1 #b bar 
+```
+
+# kanbans in your [dotfiles] GIT-repo + 1 in a projectrepo
 
 ```
 $ cd ~                         # go to homedir (where your dotfiles live)
