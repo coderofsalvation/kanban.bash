@@ -281,7 +281,7 @@ show(){
   } | columnize
   [[ -n $SMALLSCREEN ]] && echo -e "    ${COL1}(${COL0} small terminal detected, hiding certain columns ${COL1})"
   echo ""
-  ls */.kanban/.kanban.conf | awk '{
+  ls */.kanban/.kanban.conf 2>/dev/null | awk '{
     if( !START ){
       print "kanbans: "
       START=1
@@ -289,7 +289,7 @@ show(){
     gsub("^./","",$0)
     gsub("/.kanban.*","",$0)
     print "   ├─ "$0 
-  }' 2>/dev/null
+  }'
 }
 
 get_current_date(){ date "+%Y-%m-%d@%H:%M"; }
