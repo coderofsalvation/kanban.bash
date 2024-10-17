@@ -70,8 +70,8 @@ TMP=$(mktemp -t kanban.XXXXXXXX)
 [[ ! -n $TERM ]] && TERM=vt100
 locale | grep -q "UTF-8" && UTF8=1
 [[ -n $PLAIN ]] && unset UTF8
-[[ ! -n $X   ]] && X=$(tput cols)    # get size of terminal window
-[[ ! -n $Y   ]] && Y=$(tput lines)   # 
+[[ ! -n $X   ]] && X=$(tput cols)   # get size of terminal window
+[[ ! -n $Y   ]] && Y=$(tput lines)  # 
 SMALLSCREEN=('SCHEDULED' 'HOLD' 'DOING')  # uncomment to get simplified kanban board
 [[ ! -n $XSMALL ]] && XSMALL=119
 FILE_CONF=".kanban/.kanban.conf"
@@ -101,7 +101,7 @@ XSMALL=119                           # show small kanban for terminalwidth < 119
 SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # define simplified kanban board statuses
 
 # maximum amount of todos within status (triggers warning when exceeds)
-declare -A maximum_todo
+declare -a maximum_todo
 maximum_todo[HOLD]=10
 maximum_todo[DOING]=5
 "
@@ -109,10 +109,24 @@ maximum_todo[DOING]=5
 # usage: fb put <x> <y> <string>
 put() { printf "\x1B["$2";"$1"f$3" "$4"; }
 
-strtoline(){ for((i=0;i<${#1};i++)); do printf "$2"; done; }
+strtoline() {
+    str="$1"
+    char="$2"
+    i=0
+    len=${#str}
+    
+    while [ "$i" -lt "$len" ]; do
+        printf "%s" "$char"
+        i=$((i + 1))
+    done
+}
 
-draw_line(){
-  for((i=0;i<$1;i++)); do printf "-"; done
+draw_line() {
+    i=0
+    while [ "$i" -lt "$1" ]; do
+        printf "-"
+        i=$((i + 1))
+    done
 }
 
 # usage: fb box <x> <y> <width> <height>
@@ -208,27 +222,27 @@ list(){
 
 create_index(){
   rm $TMP.index &>/dev/null
-  cat -n "$KANBANFILE" | sed 's/^[ ]\+//g;s/\t/,/g;s/"\/.*\//"/g' | evaluate >> $TMP.index
+  cat -n "$KANBANFILE" | sed 's/^[ ]\+//g;s/\\t/,/g;s/"\/.*\//"/g' | evaluate >> $TMP.index
 }
 
 columnize(){
   awkformat='{ tag=substr($2,1,4); gsub($2,tag); printf("%-5s",$1); print " #"$2" "$3" "$4" "$5 }'
   [[ -n $SMALLSCREEN ]] && awkformat='{ print $1" "$3" "$4" "$5 }'
-  i=1; lines="$(cat)"; header="$( echo "$lines" | head -n0 )"; output="";
+  i=1; lines="$(cat)"; header="$( echo "$lines" | head -1 )"; output="";
   rm $TMP.col.* &>/dev/null
   for status in "${statuses[@]}"; do 
     [[ -n $SMALLSCREEN ]] && ! [[ "${SMALLSCREEN[@]}" =~ $status ]] && continue
     label=$status
     nlines=$(cat $TMP.index | grep "$status" | wc -l) 
     maxlines=0 
-    [[ -v "maximum_todo[$status]" ]] && maxlines=${maximum_todo[$status]}
+    [[ -n "maximum_todo[$status]" ]] && maxlines=${maximum_todo[$status]}
     [[ ${maximum_todo[$status]} > 0 ]] && [[ $nlines > ${maximum_todo[$status]} ]] && label="*$status*"
     echo -e ".$(strtoline "$label" "~")~~.\n| $label |_______\n|" > $TMP.col.$i
     cat $TMP.index | grep "$status" | sed 's/["]\?'$status'["]\?//g'       | \
       printcsv 5   | awk "$awkformat" |  sed 's/^/| /g;s/  / /g'           | unexpand >> $TMP.col.$i
     i=$((i+1))
   done 
-  pr -m -t -w$((X-5)) -s"      "  $TMP.col.*  | lines 
+  pr -m -t -w$((X-5)) $TMP.col.* | lines 
   rm $TMP.col.* # print and cleanup
 }
 
@@ -259,7 +273,7 @@ show(){
   [[ ! -f "$KANBANFILE" ]] && touch "$KANBANFILE" 
   create_index
   if [[ -n $1 ]]; then 
-    statuses=(); for status in $*; do statuses+=($status); done 
+    statuses=""; for status in $*; do statuses="$status $statuses"; done 
   fi
   { 
     echo "$1"
@@ -295,7 +309,7 @@ update_item_status(){
     newitem="${newitem/$status/$2}"
     newitem="${newitem/$flags/$newflags}"
     newitem="${newitem/$dates/$newdates}"
-    sed -i "s|$item|$newitem|g" "$KANBANFILE" 
+    sed -i '' "s|$item|$newitem|g" "$KANBANFILE" 
     echo "$status -> $2"
   fi
 }
@@ -313,7 +327,7 @@ update_item(){
 #
 '"$item" > $TMP.update
   ${EDITOR} $TMP.update
-  sed -i "s|$item|$(cat $TMP.update | tail -n1)|g" "$KANBANFILE" 
+  sed -i '' "s|$item|$(cat $TMP.update | tail -n1)|g" "$KANBANFILE" 
   echo "updated item $1"
 }
 
