@@ -228,7 +228,7 @@ columnize(){
       printcsv 5   | awk "$awkformat" |  sed 's/^/| /g;s/  / /g'           | unexpand >> $TMP.col.$i
     i=$((i+1))
   done 
-  pr -m -t -w$((X-5)) -S"      "  $TMP.col.*  | lines 
+  pr -m -t -w$((X-5)) -s"      "  $TMP.col.*  | lines 
   rm $TMP.col.* # print and cleanup
 }
 
