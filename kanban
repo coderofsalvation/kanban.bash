@@ -58,6 +58,9 @@
 #  
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#set -x
+
 deps="tput column pr gawk"
 for dep in $deps; do which $dep &>/dev/null || { echo "$dep-cmd not installed..aborting (maybe install coreutils util-linux pkgs?)"; exit 1; }; done
 BOX=(┌ ─ ┐ └ ┘ │ ┤ ┴ ┬ ├ ┼)
@@ -309,7 +312,7 @@ update_item_status(){
     newitem="${newitem/$status/$2}"
     newitem="${newitem/$flags/$newflags}"
     newitem="${newitem/$dates/$newdates}"
-    sed -i '' "s|$item|$newitem|g" "$KANBANFILE" 
+    sed "s|$item|$newitem|g" "$KANBANFILE" > $TMP.update.tmp && mv $TMP.update.tmp "$KANBANFILE"
     echo "$status -> $2"
   fi
 }
