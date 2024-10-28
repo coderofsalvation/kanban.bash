@@ -330,7 +330,7 @@ update_item(){
 #
 '"$item" > $TMP.update
   ${EDITOR} $TMP.update
-  sed -i '' "s|$item|$(cat $TMP.update | tail -n1)|g" "$KANBANFILE" 
+  sed "s|$item|$(cat $TMP.update | tail -n1)|g" "$KANBANFILE" > $TMP.update.tmp && mv $TMP.update.tmp "$KANBANFILE"
   echo "updated item $1"
 }
 
