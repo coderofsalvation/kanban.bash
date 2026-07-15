@@ -10,6 +10,7 @@
 #   kanban <id>                             # edit or update item 
 #   kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
 #   kanban <status> .....                   # list only todo items with this status(es)
+#   kanban sum <csvfield> [tag]             # sum total of certain csvfield
 #   kanban list                             # list all todos (heavy)
 #   kanban tags                             # list all submitted tags
 #   kanban add <status> <tag> <description> # add item (use quoted strings for args)  
@@ -32,6 +33,8 @@
 #   # store in github repo
 #   git clone https://../foo.git && cd foo.git && kanban init && git add .kanban
 # 
+#   kanban sum hours DONE  # sum total hours (if column exists in csv)
+#
 # Environment:
 # 
 #   X=120 kanban ....         # set max line-width to 120
@@ -101,6 +104,7 @@ statuses=('TODO' 'HOLD' 'DOING' 'DONE' 'NOTES' 'BACKLOG')
 
 XSMALL=119                           # show small kanban for terminalwidth < 119 chars
 SMALLSCREEN=('DOING' 'TODO' 'HOLD')  # define simplified kanban board statuses
+HEADER="id,status,tag,description,history,start,hours\n-,-,-,-,-\n" 
 
 # maximum amount of todos within status (triggers warning when exceeds)
 declare -a maximum_todo
@@ -193,6 +197,24 @@ evaluate(){
   done
 }
 
+sum(){
+  [[ ! -n $1 ]] && exit 1
+  create_index
+  field=$1; shift; tags="$*"
+  fieldindex="$(
+    echo $HEADER | awk '{ 
+      split($0,x,","); for(i=1;i<length(x)+1;i++) if(x[i] == "'$field'") print(i-1)  
+    }'
+  )"
+  test -z $fieldindex && { echo "error: csv field not defined in HEADER (.kanban/.kanban.conf)"; exit 1;}
+  greppattern="(${tags// /\|})"
+  cat $TMP.index | grep -E "$greppattern" | awk '{ 
+    split($0,x,",")
+    i+=x['$fieldindex'] }
+    END{ print i 
+  }'
+}
+
 stats(){
   [[ ! -n $1 ]] && exit 1
   create_index
@@ -222,8 +244,9 @@ list(){
   tags="$*"
   greppattern="(${tags// /\|})"
   create_index
+  fields="$(echo -e "$HEADER" | awk -F , 'NR == 1 { print NF+1 }')"
   echo -e "$COL1"
-  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | HEADER="id,status,tag,description,history,start,touched\n-,-,-,-,-\n" printcsv 6 | cut -c 1-$X | colorize 3
+  cat $TMP.index | grep -E "$greppattern" | sort -k2 -t, | printcsv $fields | cut -c 1-$X | colorize 2
   rm $TMP.*
 }
 
@@ -339,9 +362,9 @@ update_item(){
 }
 
 printcsv(){
-  csv="$HEADER$(cat)"
-  [[ ! -n $1 ]] && max=999999 || max=$1
+  [[ ! -n $1 ]] && max=7 || max=$1
   [[ ! -n $2 ]] && min=1 || min=$1
+  csv="${HEADER}\n$(cat)"
   echo -e "$csv" | sed 's/,"",/," ",/g' | gawk -vFS='^"|","|"$|",|,"|,'            \
     '{out=""; for(i='$min';i<NF+1&&i<max;i++) out=out"\t"$i; print out }'      \
     max=$max | sed 's/""/"/g' | column -t -s $'\t'                   

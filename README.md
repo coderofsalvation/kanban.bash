@@ -34,10 +34,11 @@ Usage:
 
   kanban init                             # initialize kanban in current directory
   kanban add                              # add item interactive (adviced) 
-  kanban show [status] ....               # show ascii kanban board [with status]
+  kanban show [dir with .kanban]          # show global [or nested] ascii kanbanboard
   kanban <id>                             # edit or update item 
   kanban <id> <status>                    # update status of todo id (uses $EDITOR as preferred editor)
   kanban <status> .....                   # list only todo items with this status(es)
+  kanban sum <csvfield> [tag]             # sum total of certain csvfield
   kanban list                             # list all todos (heavy)
   kanban tags                             # list all submitted tags
   kanban add <status> <tag> <description> # add item (use quoted strings for args)  
@@ -55,17 +56,22 @@ Examples:
   kanban TODO DOING HOLD                 
   kanban stats status projectX
   kanban stats tag projectX 
-  watch NOCOLOR=1 kanban show
   # notekeeping by entering a filename as description:
   echo hello > note.txt && kanban add DOING note.txt
   # store in github repo
   git clone https://../foo.git && cd foo.git && kanban init && git add .kanban
 
+  kanban sum hours DONE  # sum total hours (if column exists in csv)
+#
 Environment:
 
   X=120 kanban ....         # set max line-width to 120
   NOCOLOR=1 kanban ....     # disable colors
   PLAIN=1 kanban ...        # plaintext, disable utf8 chars
+
+Tips:
+
+[m
 ```
 
 ## Change status 
@@ -162,6 +168,32 @@ enter one of statuses: BACKLOG TODO IN_PROGRESS HOLD DONE
 enter one of tags: projectA, projectB 
 > projectA
 $
+```
+
+## Tracking hours (or any custom CSV-field)
+
+This is delegated to manual csv-editing and `kanban sum` (or your good old spreadsheet editor).
+First make sure your column (`hours` e.g.) is configured in `HEADER`:
+
+```bash
+$ grep HEADER ~/.kanban/kanban.conf
+HEADER="id,status,tag,description,history,start,hours"
+```
+
+OK, we're good, now adds some hours in the csv
+
+```bash
+$ kanban csv
+BACKLOG,"meeting","fridaymeeting","D","2026-06-26@11:00",3
+DONE,"meeting","fridaymeeting","D","2026-06-26@11:00",4
+                                                      ^^^ enter hournumber here
+```
+Now we can sum it via your spreadsheet editor, or `kanban sum`:
+```bash 
+$ kanban sum hours
+7
+$ kanban sum hours DONE
+4
 ```
 
 ## Responsive kanban.
