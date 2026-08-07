@@ -73,7 +73,7 @@ TMP=$(mktemp -t kanban.XXXXXXXX)
 IS_MAC=0
 [[ "$(uname)" =~ Darwin ]] && IS_MAC=1
 [[ ! -n $TERM ]] && TERM=vt100
-locale | grep -q "UTF-8" && UTF8=1
+echo "$LANG" | grep -q "UTF-8" && UTF8=1
 [[ -n $PLAIN ]] && unset UTF8
 [[ ! -n $X   ]] && X=$(tput cols)   # get size of terminal window
 [[ ! -n $Y   ]] && Y=$(tput lines)  # 
